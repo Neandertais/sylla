@@ -6,52 +6,60 @@
     "dev": "node ace serve --watch",
     "build": "node ace build --production",
     "start": "node server.js",
-    "lint": "eslint . --ext=.ts --fix",
-    "format": "prettier --write .",
     "test": "node ace test",
-    "testWatch": "node ace test -w",
-    "docker:test": "docker exec -it adonis_app node ace test",
-    "docker:testWatch": "docker exec -it adonis_app node ace test -w",
-    "dockerAttach": "docker exec -it adonis_app /bin/sh",
-    "dockerAttachRedis": "docker exec -it redis /bin/sh",
-    "dockerAttachPostgres": "docker exec -it postgres /bin/sh",
-    "prepare": "cd ../../ && husky install code/api/.husky"
+    "lint": "eslint . --ext=.ts",
+    "format": "prettier --write ."
+  },
+  "eslintConfig": {
+    "extends": [
+      "plugin:adonis/typescriptApp",
+      "prettier"
+    ],
+    "plugins": [
+      "prettier"
+    ],
+    "rules": {
+      "prettier/prettier": [
+        "error"
+      ]
+    }
+  },
+  "eslintIgnore": [
+    "build"
+  ],
+  "prettier": {
+    "trailingComma": "es5",
+    "semi": false,
+    "singleQuote": true,
+    "useTabs": false,
+    "quoteProps": "consistent",
+    "bracketSpacing": true,
+    "arrowParens": "always",
+    "printWidth": 100
   },
   "devDependencies": {
     "@adonisjs/assembler": "^5.9.5",
-    "@commitlint/cli": "^17.4.4",
-    "@commitlint/config-conventional": "^17.4.4",
     "@japa/preset-adonis": "^1.2.0",
-    "@japa/runner": "^2.2.2",
-    "@types/bull": "^4.10.0",
+    "@japa/runner": "^2.5.1",
     "@types/proxy-addr": "^2.0.0",
     "@types/source-map-support": "^0.5.6",
-    "@typescript-eslint/parser": "^5.52.0",
     "adonis-preset-ts": "^2.1.0",
-    "eslint": "^8.28.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-import-resolver-typescript": "^3.5.3",
+    "eslint": "^8.40.0",
+    "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-adonis": "^2.1.1",
-    "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^4.2.1",
-    "husky": "^8.0.3",
-    "pino-pretty": "^9.1.1",
-    "prettier": "^2.7.1",
+    "pino-pretty": "^10.0.0",
+    "prettier": "^2.8.8",
     "typescript": "~4.6",
-    "youch": "^3.2.2",
-    "youch-terminal": "^2.1.5"
+    "youch": "^3.2.3",
+    "youch-terminal": "^2.2.0"
   },
   "dependencies": {
-    "@adonisjs/auth": "^8.2.3",
-    "@adonisjs/core": "^5.8.9",
+    "@adonisjs/core": "^5.8.0",
     "@adonisjs/lucid": "^18.3.0",
-    "@adonisjs/redis": "^7.3.2",
-    "@adonisjs/repl": "^3.1.11",
-    "bull": "^4.10.2",
-    "luxon": "^3.1.0",
-    "meilisearch": "^0.30.0",
-    "nanoid": "^3.3.4",
-    "pg": "^8.8.0",
+    "@adonisjs/repl": "^3.1.0",
+    "luxon": "^3.3.0",
+    "pg": "^8.10.0",
     "proxy-addr": "^2.0.7",
     "reflect-metadata": "^0.1.13",
     "source-map-support": "^0.5.21"

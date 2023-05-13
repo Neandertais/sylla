@@ -5,4 +5,4 @@ coverage
 .DS_STORE
 .env
 tmp
-yarn-error.log
+.pnpm-store
