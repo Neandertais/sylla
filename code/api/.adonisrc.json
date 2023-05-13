@@ -20,7 +20,8 @@
   "providers": [
     "./providers/AppProvider",
     "@adonisjs/core",
-    "@adonisjs/lucid"
+    "@adonisjs/lucid",
+    "@adonisjs/auth"
   ],
   "aceProviders": [
     "@adonisjs/repl"
@@ -28,9 +29,9 @@
   "tests": {
     "suites": [
       {
-        "name": "functional",
+        "name": "e2e",
         "files": [
-          "tests/functional/**/*.spec(.ts|.js)"
+          "tests/e2e/**/*.spec(.ts|.js)"
         ],
         "timeout": 60000
       }
