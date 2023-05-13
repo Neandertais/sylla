@@ -1,12 +1,16 @@
-ARG NODE_IMAGE=node:18-alpine
+FROM node:18-alpine as base
+RUN npm i -g pnpm
 
-FROM $NODE_IMAGE AS deps
+
+# Install dependecies
+FROM base AS deps
 WORKDIR /app
 
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm i --frozen-lockfile
 
-FROM $NODE_IMAGE AS builder
+# Build for production
+FROM base AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
@@ -14,7 +18,24 @@ COPY . .
 
 RUN node ace build --production
 
-FROM $NODE_IMAGE AS runner
+
+# Development container
+FROM base AS development
+RUN apk --no-cache add tini
+ENTRYPOINT [ "tini" ]
+
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+EXPOSE $PORT
+
+CMD [ "node", "ace", "serve", "--watch" ]
+
+
+# Production container
+FROM base AS production
 RUN apk --no-cache add tini
 ENTRYPOINT [ "tini" ]
 
@@ -27,7 +48,7 @@ ENV HOST 0.0.0.0
 COPY --from=deps /app/package.json /app/yarn.lock ./
 COPY --from=builder /app/build .
 
-RUN yarn install --production --frozen-lockfile
+RUN pnpm i --frozen-lockfile --prod
 
 EXPOSE $PORT
 

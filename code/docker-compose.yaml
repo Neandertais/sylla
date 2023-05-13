@@ -1,83 +1,30 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  postgres:
-    container_name: postgres
-    image: postgres:15-alpine
-    volumes:
-      - ./api/scripts/postgresql:/docker-entrypoint-initdb.d
-      - postgres_volume:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: ${PG_USER}
-      POSTGRES_PASSWORD: ${PG_PASSWORD}
-      POSTGRES_MULTIPLE_DATABASES: ${PG_DB_NAME},${PG_DB_NAME}_test
-    ports:
-      - 5432:5432
-
-  redis:
-    container_name: redis
-    image: redis:6-alpine
-    volumes:
-      - redis_volume:/data
-    ports:
-      - 6379:6379
-
-  meilisearch:
-    container_name: meiliseach
-    image: getmeili/meilisearch:v0.30
-    volumes:
-      - mellisearch_volume:/meili_data
-    ports: 
-      - 7700:7700
-
-  adonis_app:
-    container_name: adonis_app
-    restart: always
-    depends_on:
-      - postgres
-      - redis
+  api:
     build:
       context: ./api
-      target: runner
-    ports:
-      - ${PORT}:${PORT}
-      - 9229:9229
+      target: development
+    depends_on:
+      - db
     env_file:
       - .env
-    environment:
-      - NODE_ENV=development
-      - PG_HOST=postgres
-      - REDIS_HOST=redis
-      - MEILISEARCH_HOST=http://meiliseach:7700
     volumes:
       - ./api:/app
-      - uploads_volume:/app/tmp/uploads
-    command: sh -c 'yarn install && exec node ace serve --watch --node-args="--inspect=0.0.0.0"'
+      - uploads-volume:/app/tmp/uploads
+    ports:
+      - ${PORT}:${PORT}
 
-  video_processing:
-    container_name: video_processing
-    restart: always
-    depends_on:
-      - redis
-    build:
-      context: ./video
-      target: runner
-    env_file:
-      - .env
-    environment:
-      - NODE_ENV=development
-      - REDIS_HOST=redis
-      - DEBUG=video:*
-    devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128
+  db:
+    image: postgres:15-alpine
     volumes:
-      - ./video:/app
-      - ./video/node_modules:/app/node_modules
-      - uploads_volume:/app/tmp/uploads
-    command: -- sh -c 'chmod 777 -R /dev/dri && yarn install && exec yarn dev'
+      - ./api/scripts/docker-postgresql-multiple-databases:/docker-entrypoint-initdb.d
+      - db-volume:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_MULTIPLE_DATABASES
 
 volumes:
-  postgres_volume:
-  redis_volume:
-  mellisearch_volume:
-  uploads_volume:
+  db-volume:
+  uploads-volume:
