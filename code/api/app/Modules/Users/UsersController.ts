@@ -4,6 +4,7 @@ import Drive from '@ioc:Adonis/Core/Drive'
 import { randomUUID } from 'node:crypto'
 
 import UpdateUserValidator from 'App/Validators/UpdateUserValidator'
+import UserCheckValidator from 'App/Validators/UserCheckValidator'
 
 import User from 'App/Models/User'
 
@@ -12,6 +13,12 @@ export default class UsersController {
     return {
       data: { user },
     }
+  }
+
+  public async check({ request, response }: HttpContextContract) {
+    await request.validate(UserCheckValidator)
+
+    return response.noContent()
   }
 
   public async find({ params: { username }, response }: HttpContextContract) {
@@ -46,7 +53,7 @@ export default class UsersController {
     }
 
     if (payload.avatar === null) {
-      await Drive.delete(Application.tmpPath('uploads', user.avatar))
+      user.avatar && (await Drive.delete(Application.tmpPath('uploads', user.avatar)))
     }
 
     await user.socialLinks.merge(payload?.socialLinks as any).save()

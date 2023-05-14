@@ -10,6 +10,7 @@ export default function usersRoutes() {
     Route.group(() => {
       Route.get('/:username', 'UsersController.find')
       Route.route('/:username', ['PATCH', 'PUT'], 'UsersController.update').middleware('auth')
+      Route.post('/check', 'UsersController.check')
     })
       .prefix('users')
       .where('username', /^[a-z0-9_]+$/)
