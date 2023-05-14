@@ -1,7 +1,17 @@
 import { DateTime } from 'luxon'
-import SocialLinks from 'App/Models/SocialLinks'
-import { BaseModel, HasOne, beforeCreate, beforeSave, column, hasOne } from '@ioc:Adonis/Lucid/Orm'
 import Hash from '@ioc:Adonis/Core/Hash'
+import Env from '@ioc:Adonis/Core/Env'
+import {
+  BaseModel,
+  HasOne,
+  afterCreate,
+  beforeCreate,
+  beforeSave,
+  column,
+  hasOne,
+} from '@ioc:Adonis/Lucid/Orm'
+
+import SocialLinks from 'App/Models/SocialLinks'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -10,7 +20,10 @@ export default class User extends BaseModel {
   @column()
   public name: string
 
-  @column()
+  @column({
+    serializeAs: 'avatarUrl',
+    serialize: (value) => (value ? `${Env.get('DOMAIN')}/uploads/${value}` : value),
+  })
   public avatar: string
 
   @column()
@@ -31,10 +44,10 @@ export default class User extends BaseModel {
   @column({ serializeAs: null })
   public password: string
 
-  @column.dateTime({ autoCreate: true })
+  @column.dateTime({ serializeAs: null, autoCreate: true })
   public createdAt: DateTime
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  @column.dateTime({ serializeAs: null, autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
   @beforeSave()
@@ -47,5 +60,10 @@ export default class User extends BaseModel {
   @beforeCreate()
   public static async assignInitialValues(user: User) {
     user.cash = 50
+  }
+
+  @afterCreate()
+  public static async createTableSocialLinks(user: User) {
+    await user.related('socialLinks').create({})
   }
 }

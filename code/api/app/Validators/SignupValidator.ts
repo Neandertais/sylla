@@ -9,7 +9,7 @@ export default class SignupValidator {
       rules.trim(),
       rules.minLength(6),
       rules.maxLength(56),
-      rules.alpha({ allow: ['underscore'] }),
+      rules.alphaNum({ allow: ['underscore'] }),
       rules.unique({ table: 'users', column: 'username' }),
     ]),
     email: schema.string([
