@@ -7,13 +7,23 @@ import CourseCreateValidator from 'App/Validators/CourseCreateValidator'
 import CourseUpdateValidator from 'App/Validators/CourseUpdateValidator'
 
 import Course from 'App/Models/Course'
+import Database from '@ioc:Adonis/Lucid/Database'
+import CourseStudent from 'App/Models/CourseStudent'
 
 export default class CoursesController {
-  public async list({ request }: HttpContextContract) {
+  public async list({ auth: { user }, request }: HttpContextContract) {
     const { owner } = request.qs()
 
     if (owner) {
       const courses = await Course.query().where('ownerId', owner)
+
+      return { data: courses }
+    }
+
+    if (user) {
+      const courses = await Course.query().whereIn('id', (query) =>
+        query.from('course_students').select('course_id').where('user_id', user.username)
+      )
 
       return { data: courses }
     }
@@ -94,5 +104,38 @@ export default class CoursesController {
     await course.delete()
 
     return response.noContent()
+  }
+
+  public async buy({ auth: { user }, params: { id }, bouncer, response }: HttpContextContract) {
+    const course = await Course.query().where('id', id).preload('owner').first()
+
+    if (!course) {
+      return response.notFound({ errors: [{ message: 'course not found' }] })
+    }
+
+    await bouncer.authorize('buyCourse', course)
+
+    if (course.price > user?.cash!) {
+      return response.badRequest({ errors: [{ message: 'insufficient money' }] })
+    }
+
+    await Database.transaction(async (trx) => {
+      const student = new CourseStudent()
+
+      student.userId = user?.username!
+      student.courseId = course.id
+
+      user?.useTransaction(trx)
+      course.owner.useTransaction(trx)
+      student.useTransaction(trx)
+
+      await Promise.all([
+        user?.merge({ cash: user.cash - course.price }).save(),
+        course.owner.merge({ cash: course.owner.cash + course.price }).save(),
+        student.save(),
+      ])
+    })
+
+    return response.created()
   }
 }

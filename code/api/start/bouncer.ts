@@ -12,5 +12,8 @@ export const { actions } = Bouncer.define('updateUser', (user: User, updateUser:
   .define('deleteCourse', (user: User, updateCourse: Course) => {
     return user.username === updateCourse.ownerId
   })
+  .define('buyCourse', (buyerUser: User, course: Course) => {
+    return buyerUser.username !== course.ownerId
+  })
 
 export const { policies } = Bouncer.registerPolicies({})
