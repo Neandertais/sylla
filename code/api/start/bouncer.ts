@@ -15,5 +15,14 @@ export const { actions } = Bouncer.define('updateUser', (user: User, updateUser:
   .define('buyCourse', (buyerUser: User, course: Course) => {
     return buyerUser.username !== course.ownerId
   })
+  .define('createSection', (user: User, course: Course) => {
+    return user.username === course.ownerId
+  })
+  .define('updateSection', (user: User, course: Course) => {
+    return user.username === course.ownerId
+  })
+  .define('deleteSection', (user: User, course: Course) => {
+    return user.username === course.ownerId
+  })
 
 export const { policies } = Bouncer.registerPolicies({})

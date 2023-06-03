@@ -1,9 +1,18 @@
 import Env from '@ioc:Adonis/Core/Env'
-import { BaseModel, BelongsTo, beforeCreate, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import {
+  BaseModel,
+  BelongsTo,
+  HasMany,
+  beforeCreate,
+  belongsTo,
+  column,
+  hasMany,
+} from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
 import { nanoid } from 'nanoid'
 
 import User from 'App/Models/User'
+import Section from './Section'
 
 export default class Course extends BaseModel {
   @column({ isPrimary: true })
@@ -45,6 +54,9 @@ export default class Course extends BaseModel {
     localKey: 'username',
   })
   public owner: BelongsTo<typeof User>
+
+  @hasMany(() => Section, { foreignKey: 'courseId' })
+  public sections: HasMany<typeof Section>
 
   @column.dateTime({ serializeAs: null, autoCreate: true })
   public createdAt: DateTime
