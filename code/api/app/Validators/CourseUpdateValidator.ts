@@ -9,6 +9,7 @@ export default class CourseUpdateValidator {
     description: schema.string.optional([rules.minLength(20), rules.maxLength(560)]),
     willLearn: schema.array.optional().members(schema.string([rules.trim()])),
     price: schema.number.optional(),
+    keywords: schema.array.optional().members(schema.string([rules.alpha()])),
     banner: schema.file.nullableAndOptional({ size: '10mb', extnames: ['jpg', 'png', 'webp'] }),
   })
 

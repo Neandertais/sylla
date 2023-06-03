@@ -9,6 +9,7 @@ export default class CourseCreateValidator {
     description: schema.string.optional([rules.minLength(20), rules.maxLength(560)]),
     willLearn: schema.array.optional().members(schema.string([rules.trim()])),
     price: schema.number(),
+    keywords: schema.array().members(schema.string([rules.alpha()])),
     banner: schema.file.optional({ size: '10mb', extnames: ['jpg', 'png', 'webp'] }),
   })
 

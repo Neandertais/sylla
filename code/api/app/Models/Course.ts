@@ -19,6 +19,12 @@ export default class Course extends BaseModel {
   public price: number
 
   @column({
+    prepare: (value) => value.toString(),
+    consume: (value) => (value ? value.split(',') : value),
+  })
+  public keywords: string[]
+
+  @column({
     serializeAs: 'willLearn',
     prepare: (value) => JSON.stringify(value),
     consume: (value) => JSON.parse(value),

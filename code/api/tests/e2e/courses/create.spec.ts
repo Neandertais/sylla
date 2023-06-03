@@ -18,12 +18,22 @@ test.group('Courses - create', (group) => {
     const response = await client
       .post('/api/v1/courses')
       .file('banner', banner.contents, { filename: banner.name })
-      .fields({ name: 'Javascript Object Oriented', price: 15.9 })
+      .fields({
+        name: 'Javascript Object Oriented',
+        price: 15.9,
+        keywords: ['javascript', 'programming'],
+      })
       .loginAs(user)
 
     response.assertStatus(201)
     response.assertBodyContains({
-      data: { course: { name: 'Javascript Object Oriented', price: 15.9 } },
+      data: {
+        course: {
+          name: 'Javascript Object Oriented',
+          price: 15.9,
+          keywords: ['javascript', 'programming'],
+        },
+      },
     })
   })
 

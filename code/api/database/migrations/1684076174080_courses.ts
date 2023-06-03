@@ -11,6 +11,7 @@ export default class extends BaseSchema {
       table.decimal('price', 18, 2).unsigned()
       table.string('will_learn', 840)
       table.string('banner', 48)
+      table.string('keywords', 340)
 
       table.string('owner_id', 56).references('users.username').onDelete('CASCADE')
 
