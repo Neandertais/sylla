@@ -12,7 +12,7 @@ test.group('Courses - buy', (group) => {
 
   test('should return status created when successful', async ({ client }) => {
     const user = await UserFactory.create()
-    const course = await CourseFactory.with('owner').create()
+    const course = await CourseFactory.with('owner').merge({ price: 12.2 }).create()
 
     const response = await client.post(`api/v1/courses/${course.id}/buy`).loginAs(user)
 

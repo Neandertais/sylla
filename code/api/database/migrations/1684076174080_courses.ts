@@ -8,7 +8,7 @@ export default class extends BaseSchema {
       table.string('id', 21).primary()
       table.string('name', 120)
       table.string('description', 560)
-      table.float('price')
+      table.decimal('price', 18, 2).unsigned()
       table.string('will_learn', 840)
       table.string('banner', 48)
 

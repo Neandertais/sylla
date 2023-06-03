@@ -115,7 +115,7 @@ export default class CoursesController {
 
     await bouncer.authorize('buyCourse', course)
 
-    if (course.price > user?.cash!) {
+    if (Number(course.price) > Number(user?.cash!)) {
       return response.badRequest({ errors: [{ message: 'insufficient money' }] })
     }
 
@@ -130,8 +130,8 @@ export default class CoursesController {
       student.useTransaction(trx)
 
       await Promise.all([
-        user?.merge({ cash: user.cash - course.price }).save(),
-        course.owner.merge({ cash: course.owner.cash + course.price }).save(),
+        user?.merge({ cash: Number(user.cash) - Number(course.price) }).save(),
+        course.owner.merge({ cash: Number(course.owner.cash) + Number(course.price) }).save(),
         student.save(),
       ])
     })

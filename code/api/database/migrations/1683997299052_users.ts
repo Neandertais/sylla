@@ -10,7 +10,7 @@ export default class extends BaseSchema {
       table.string('avatar', 48)
       table.string('biography', 360)
       table.string('profession', 80)
-      table.integer('cash').unsigned()
+      table.decimal('cash', 18, 2).unsigned()
       table.string('email', 320).notNullable().unique()
       table.string('password', 180).notNullable()
 
