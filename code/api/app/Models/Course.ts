@@ -1,4 +1,4 @@
-import Env from '@ioc:Adonis/Core/Env'
+import { DateTime } from 'luxon'
 import {
   BaseModel,
   BelongsTo,
@@ -8,11 +8,11 @@ import {
   column,
   hasMany,
 } from '@ioc:Adonis/Lucid/Orm'
-import { DateTime } from 'luxon'
+import Env from '@ioc:Adonis/Core/Env'
 import { nanoid } from 'nanoid'
 
 import User from 'App/Models/User'
-import Section from './Section'
+import Section from 'App/Models/Section'
 
 export default class Course extends BaseModel {
   @column({ isPrimary: true })
@@ -65,7 +65,7 @@ export default class Course extends BaseModel {
   public updatedAt: DateTime
 
   @beforeCreate()
-  public static async generateId(course: Course) {
+  public static async randomID(course: Course) {
     course.id = nanoid()
   }
 }

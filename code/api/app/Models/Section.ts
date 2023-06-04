@@ -1,7 +1,16 @@
-import { BaseModel, BelongsTo, beforeCreate, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import {
+  BaseModel,
+  BelongsTo,
+  HasMany,
+  beforeCreate,
+  belongsTo,
+  column,
+  hasMany,
+} from '@ioc:Adonis/Lucid/Orm'
 import { nanoid } from 'nanoid'
 
 import Course from 'App/Models/Course'
+import Video from 'App/Models/Video'
 
 export default class Section extends BaseModel {
   @column({ isPrimary: true })
@@ -19,8 +28,11 @@ export default class Section extends BaseModel {
   @belongsTo(() => Course, { serializeAs: null })
   public course: BelongsTo<typeof Course>
 
+  @hasMany(() => Video, { serializeAs: null })
+  public videos: HasMany<typeof Video>
+
   @beforeCreate()
-  public static async generateId(section: Section) {
+  public static async randomID(section: Section) {
     section.id = nanoid()
   }
 }

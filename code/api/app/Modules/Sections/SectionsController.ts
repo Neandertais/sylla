@@ -80,7 +80,7 @@ export default class SectionsController {
       return response.notFound({ errors: [{ message: 'section not found' }] })
     }
 
-    await bouncer.authorize('updateSection', section.course)
+    await bouncer.authorize('deleteSection', section.course)
 
     await section.delete()
 
