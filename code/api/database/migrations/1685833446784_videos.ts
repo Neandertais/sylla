@@ -9,6 +9,9 @@ export default class extends BaseSchema {
       table.string('name', 240)
       table.string('description', 5_000)
       table.integer('position').unsigned()
+      table.string('thumbnail', 48)
+      table.integer('duration').unsigned()
+      table.string('status', 18)
 
       table.string('section_id', 21).references('sections.id')
 

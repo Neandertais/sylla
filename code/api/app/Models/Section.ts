@@ -19,7 +19,7 @@ export default class Section extends BaseModel {
   @column()
   public name: string
 
-  @column({ serializeAs: null })
+  @column()
   public position: number
 
   @column({ serializeAs: null })

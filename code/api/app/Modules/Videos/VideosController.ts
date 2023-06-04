@@ -137,4 +137,37 @@ export default class VideosController {
 
     return response.ok({ data: { video } })
   }
+
+  public async upload({ params: { id }, request, response, bouncer }: HttpContextContract) {
+    const video = await Video.query()
+      .where('id', id)
+      .preload('section', (section) => section.preload('course'))
+      .first()
+
+    if (!video) {
+      return response.notFound({ errors: [{ message: 'video not found' }] })
+    }
+
+    await bouncer.authorize('updateVideo', video)
+
+    if (video.status) {
+      return response.notAcceptable({ errors: [{ message: 'video has been uploaded' }] })
+    }
+
+    const file = request.file('video', {
+      size: '5gb',
+      extnames: ['mp4', 'webm', 'mkv', 'avi'],
+    })
+
+    if (!file || !file.isValid) {
+      return response.unsupportedMediaType({ errors: [{ message: 'unsupported video format' }] })
+    }
+
+    const filename = `uploaded.${file.extname}`
+    await file.moveToDisk(video.id, { name: filename }, 'video')
+
+    await video.save()
+
+    return response.noContent()
+  }
 }

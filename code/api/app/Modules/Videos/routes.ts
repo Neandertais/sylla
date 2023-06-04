@@ -13,6 +13,7 @@ export default function videosRoutes() {
     Route.route('/:id', ['PATCH', 'PUT'], 'VideosController.update').middleware('auth')
     Route.delete('/:id', 'VideosController.delete').middleware('auth')
     Route.patch('/:id/order', 'VideosController.updateOrder').middleware('auth')
+    Route.patch('/:id/upload', 'VideosController.upload').middleware('auth')
   })
     .prefix('videos')
     .where('id', /^[a-zA-Z0-9_-]+$/)
