@@ -14,7 +14,7 @@ export default class Video extends BaseModel {
   @column()
   public description: string
 
-  @column()
+  @column({ serializeAs: null })
   public position: number
 
   @column({ serializeAs: null })

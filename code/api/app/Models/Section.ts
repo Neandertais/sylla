@@ -19,7 +19,7 @@ export default class Section extends BaseModel {
   @column()
   public name: string
 
-  @column()
+  @column({ serializeAs: null })
   public position: number
 
   @column({ serializeAs: null })
@@ -28,7 +28,7 @@ export default class Section extends BaseModel {
   @belongsTo(() => Course, { serializeAs: null })
   public course: BelongsTo<typeof Course>
 
-  @hasMany(() => Video, { serializeAs: null })
+  @hasMany(() => Video)
   public videos: HasMany<typeof Video>
 
   @beforeCreate()

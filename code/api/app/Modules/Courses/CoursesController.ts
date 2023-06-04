@@ -28,11 +28,19 @@ export default class CoursesController {
       return { data: courses }
     }
 
-    return {}
+    const courses = await Course.all()
+
+    return { data: { courses } }
   }
 
   public async find({ params: { id }, response }: HttpContextContract) {
-    const course = await Course.query().where('id', id).preload('owner').first()
+    const course = await Course.query()
+      .where('id', id)
+      .preload('owner')
+      .preload('sections', (section) =>
+        section.orderBy('position').preload('videos', (video) => video.orderBy('position'))
+      )
+      .first()
 
     if (!course) {
       return response.notFound({ errors: [{ message: 'course not found' }] })
@@ -40,7 +48,15 @@ export default class CoursesController {
 
     return {
       data: {
-        course: course.serialize({ relations: { owner: { fields: ['username', 'name'] } } }),
+        course: course.serialize({
+          relations: {
+            owner: { fields: ['username', 'name'] },
+            sections: {
+              fields: ['id', 'name'],
+              relations: { videos: { fields: ['id', 'name'] } },
+            },
+          },
+        }),
       },
     }
   }
