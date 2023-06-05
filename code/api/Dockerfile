@@ -1,4 +1,4 @@
-FROM node:18-alpine as base
+FROM node:18-slim as base
 RUN npm i -g pnpm
 
 
@@ -21,8 +21,10 @@ RUN node ace build --production
 
 # Development container
 FROM base AS development
-RUN apk --no-cache add tini
-ENTRYPOINT [ "tini" ]
+RUN apt-get update && \
+  apt-get install tini -y --no-install-recommends && \
+  rm -rf /var/lib/apt/lists/*
+ENTRYPOINT [ "tini", "--" ]
 
 WORKDIR /app
 
@@ -36,8 +38,10 @@ CMD [ "node", "ace", "serve", "--watch" ]
 
 # Production container
 FROM base AS production
-RUN apk --no-cache add tini
-ENTRYPOINT [ "tini" ]
+RUN apt-get update && \
+  apt-get install tini -y --no-install-recommends && \
+  rm -rf /var/lib/apt/lists/*
+ENTRYPOINT [ "tini", "--" ]
 
 WORKDIR /app
 

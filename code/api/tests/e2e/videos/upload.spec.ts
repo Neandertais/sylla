@@ -19,7 +19,7 @@ test.group('Videos - upload', (group) => {
       section.with('course', 1, (course) => course.with('owner'))
     ).create()
 
-    const file = await readFile('tests/e2e/videos/video.mp4')
+    const file = await readFile('tests/video.mp4')
 
     Drive.fake('video')
 

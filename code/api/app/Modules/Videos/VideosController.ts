@@ -1,7 +1,9 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import Env from '@ioc:Adonis/Core/Env'
 
 import Section from 'App/Models/Section'
 import Video from 'App/Models/Video'
+import { process } from 'App/Services/videoProcessing'
 
 import VideoCreateValidator from 'App/Validators/VideoCreateValidator'
 import VideoUpdateOrderValidator from 'App/Validators/VideoUpdateOrderValidator'
@@ -167,6 +169,10 @@ export default class VideosController {
     await file.moveToDisk(video.id, { name: filename }, 'video')
 
     await video.save()
+
+    if (Env.get('NODE_ENV') !== 'test') {
+      process(file.filePath!)
+    }
 
     return response.noContent()
   }
