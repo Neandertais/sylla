@@ -12,25 +12,33 @@ import CourseStudent from 'App/Models/CourseStudent'
 
 export default class CoursesController {
   public async list({ auth: { user }, request }: HttpContextContract) {
-    const { owner } = request.qs()
+    const { owner, keyword } = request.qs()
+
+    if (keyword) {
+      const courses = await Course.query().whereLike('keywords', `%${keyword}%`)
+
+      return { data: { courses } }
+    }
 
     if (owner) {
       const courses = await Course.query().where('ownerId', owner)
 
-      return { data: courses }
+      return { data: { courses } }
     }
+
+    const keywords = await Database.rawQuery(
+      "select distinct unnest(string_to_array(keywords, ',')) as keywords FROM courses limit 10;"
+    )
 
     if (user) {
       const courses = await Course.query().whereIn('id', (query) =>
         query.from('course_students').select('course_id').where('user_id', user.username)
       )
 
-      return { data: courses }
+      return { data: { courses, keywords: keywords.rows.map(({ keywords }) => keywords) } }
     }
 
-    const courses = await Course.all()
-
-    return { data: { courses } }
+    return { data: { keywords: keywords.rows.map(({ keywords }) => keywords) } }
   }
 
   public async find({ params: { id }, response }: HttpContextContract) {
