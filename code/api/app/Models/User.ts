@@ -1,6 +1,5 @@
-import { DateTime } from 'luxon'
-import Hash from '@ioc:Adonis/Core/Hash'
-import Env from '@ioc:Adonis/Core/Env'
+import Env from "@ioc:Adonis/Core/Env";
+import Hash from "@ioc:Adonis/Core/Hash";
 import {
   BaseModel,
   HasOne,
@@ -29,8 +28,15 @@ export default class User extends BaseModel {
   @column()
   public biography: string
 
-  @column()
-  public profession: string
+  @column({
+    serialize: (value) => `${Env.get("DOMAIN")}/uploads/${value}`,
+  })
+  public avatar: string;
+
+  @column({
+    prepare: (value) => JSON.stringify(value),
+  })
+  public socialLinks: SocialLink[];
 
   @column()
   public cash: number
