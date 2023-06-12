@@ -7,85 +7,89 @@ import ffmpeg, { FfprobeData } from 'fluent-ffmpeg'
 ffmpeg.setFfmpegPath(ffmpegPath)
 ffmpeg.setFfprobePath(ffprobePath)
 
-export function getMetadata(file: string) {
-  return new Promise<FfprobeData>((resolve, reject) => {
-    ffmpeg()
-      .input(file)
-      .ffprobe((err, data) => {
-        if (err) {
+export class FFmpeg {
+  private videoPath = ''
+
+  constructor(videoPath: string) {
+    this.videoPath = videoPath
+  }
+
+  public metadata() {
+    return new Promise<FfprobeData>((resolve, reject) => {
+      ffmpeg()
+        .input(this.videoPath)
+        .ffprobe((err, data) => {
+          if (err) {
+            return reject(err)
+          }
+
+          return resolve(data)
+        })
+    })
+  }
+
+  public extractImages(startTime: string, duration: string, output: string) {
+    return new Promise<void | Error>((resolve, reject) => {
+      ffmpeg()
+        .input(this.videoPath)
+        .addInputOptions(['-ss', startTime])
+        .addOutputOptions(['-t', duration, '-vf', 'fps=10/1,scale=540:-1'])
+        .output(output)
+        .on('end', () => {
+          resolve()
+        })
+        .on('error', (err) => {
           return reject(err)
-        }
+        })
+        .run()
+    })
+  }
 
-        return resolve(data)
-      })
-  })
-}
+  public resize(qualities: string[], outputFolder: string) {
+    return new Promise<void>((resolve, reject) => {
+      const generateName = (() => {
+        const basename = path.basename(this.videoPath, path.extname(this.videoPath))
 
-export function extractImages(file: string, startTime: string, duration: string, output: string) {
-  return new Promise<void | Error>((resolve, reject) => {
-    ffmpeg()
-      .input(file)
-      .addInputOptions(['-ss', startTime])
-      .addOutputOptions(['-t', duration, '-vf', 'fps=10/1,scale=540:-1'])
-      .output(output)
-      .on('end', () => {
-        resolve()
-      })
-      .on('error', (err) => {
-        return reject(err)
-      })
-      .run()
-  })
-}
+        return (quality: string) => `${outputFolder}/${basename}_${quality}.mp4`
+      })()
 
-export function resizeVideo(filename: string, originalSize: number) {
-  return new Promise<string[] | Error>((resolve, reject) => {
-    const name = path.basename(filename, path.extname(filename))
-    const videosFolder = path.dirname(filename)
+      const command = ffmpeg().input(this.videoPath)
 
-    const qualities: string[] = []
+      const sizes = {
+        '360p': () => {
+          command
+            .output(generateName('360p'))
+            .addOutputOptions(['-vf', 'fps=24/1,scale=-1:360', '-c:v', 'h264'])
+        },
+        '480p': () => {
+          command
+            .output(generateName('480p'))
+            .addOutputOptions(['-vf', 'fps=24/1,scale=-1:360', '-c:v', 'h264'])
+        },
+        '720p': () => {
+          command
+            .output(generateName('720p'))
+            .addOutputOptions(['-vf', 'fps=24/1,scale=-1:360', '-c:v', 'h264'])
+        },
+        '1080p': () => {
+          command
+            .output(generateName('1080p'))
+            .addOutputOptions(['-vf', 'fps=24/1,scale=-1:360', '-c:v', 'h264'])
+        },
+      }
 
-    const command = ffmpeg().input(filename)
+      for (const quality of qualities) {
+        sizes[quality]()
+      }
 
-    if (originalSize >= 360) {
       command
-        .output(`${videosFolder}/${name}_360.mp4`)
-        .addOutputOptions(['-vf', 'fps=24/1,scale=-1:360', '-c:v', 'h264'])
-
-      qualities.push('360p')
-    }
-
-    if (originalSize >= 480) {
-      command
-        .output(`${videosFolder}/${name}_480.mp4`)
-        .addOutputOptions(['-vf', 'fps=24/1,scale=-1:480', '-c:v', 'h264'])
-
-      qualities.push('480p')
-    }
-
-    if (originalSize >= 720) {
-      command
-        .output(`${videosFolder}/${name}_720.mp4`)
-        .addOutputOptions(['-vf', 'fps=24/1,scale=-1:720', '-c:v', 'h264'])
-
-      qualities.push('720p')
-    }
-
-    if (originalSize >= 1080) {
-      command
-        .output(`${videosFolder}/${name}_1080.mp4`)
-        .addOutputOptions(['-vf', 'fps=24/1,scale=-1:1080', '-c:v', 'h264'])
-
-      qualities.push('1080p')
-    }
-
-    command
-      .on('end', () => {
-        resolve(qualities)
-      })
-      .on('error', (err) => {
-        return reject(err)
-      })
-      .run()
-  })
+        .on('end', () => {
+          resolve()
+        })
+        .on('error', (err) => {
+          return reject(err)
+        })
+        .run()
+    })
+  }
 }

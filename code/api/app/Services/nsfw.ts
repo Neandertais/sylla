@@ -1,61 +1,64 @@
-import fs from 'node:fs'
+import { rm, mkdir, readdir, readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { randomUUID } from 'node:crypto'
 
 import * as tf from '@tensorflow/tfjs-node'
 import * as nsfw from 'nsfwjs'
 
-import { extractImages, getMetadata } from 'App/Services/ffmpeg'
+import { FFmpeg } from 'App/Services/ffmpeg'
 
 tf.enableProdMode()
 
 const model = nsfw.load()
 
-export async function checkSexualContent(video: string) {
-  const temporaryDir = resolve(`/tmp/${randomUUID()}`)
-  const output = resolve(temporaryDir + '/%04d.bmp')
+export class Nsfw {
+  public ffmpeg: FFmpeg
 
-  const {
-    format: { duration },
-  } = await getMetadata(video)
+  constructor(public videoPath: string) {
+    this.ffmpeg = new FFmpeg(videoPath)
+  }
 
-  let currentFrame = 0
+  public async hasSexualContent() {
+    const outputDir = resolve(`/tmp/${randomUUID()}`)
 
-  for (let time = 0; time < duration!; time = time + 10) {
-    if (fs.existsSync(temporaryDir)) {
-      fs.rmSync(temporaryDir, { recursive: true, force: true })
-    }
-    fs.mkdirSync(temporaryDir, { recursive: true })
+    const metadata = await this.ffmpeg.metadata()
+    const duration = metadata.format.duration!
 
-    await extractImages(video, time.toString(), '10', output)
+    for (let time = 0; time < duration!; time = time + 10) {
+      this.deleteDirectory(outputDir, true)
 
-    const files = fs.readdirSync(temporaryDir)
+      await this.ffmpeg.extractImages(time.toString(), '10', outputDir + '/%04d.bmp')
 
-    for (const file of files) {
-      const content = fs.readFileSync(resolve(temporaryDir + '/' + file))
-      const image = tf.node.decodeBmp(content)
-      const predications = await (await model).classify(image, 3)
-      image.dispose()
+      const files = await readdir(outputDir)
 
-      currentFrame++
+      for (const file of files) {
+        const buffer = await readFile(resolve(outputDir, file))
+        const image = tf.node.decodeBmp(buffer)
 
-      const probabilities: number[] = []
+        const predications = await (await model).classify(image, 3)
 
-      predications.forEach(({ className, probability }) => {
-        const sexClass = ['Porn', 'Sexy', 'Hentai']
-        if (sexClass.includes(className)) {
-          probabilities.push(probability)
+        image.dispose()
+
+        for (const { className, probability } of predications) {
+          if (!['Porn', 'Sexy', 'Hentai'].includes(className)) continue
+
+          if (probability > 0.85) {
+            this.deleteDirectory(outputDir, false)
+
+            return true
+          }
         }
-      })
-
-      if (probabilities.find((value) => value > 0.85)) {
-        fs.rmSync(temporaryDir, { recursive: true, force: true })
-
-        return true
       }
     }
-  }
-  fs.rmSync(temporaryDir, { recursive: true, force: true })
 
-  return false
+    this.deleteDirectory(outputDir, false)
+
+    return false
+  }
+
+  private async deleteDirectory(directory: string, recreate: boolean) {
+    await rm(directory, { recursive: true, force: true }).catch(() => null)
+
+    recreate && (await mkdir(directory, { recursive: true }))
+  }
 }

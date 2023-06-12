@@ -73,6 +73,9 @@ devDependencies:
   '@types/fluent-ffmpeg':
     specifier: ^2.1.21
     version: 2.1.21
+  '@types/luxon':
+    specifier: ^3.3.0
+    version: 3.3.0
   '@types/proxy-addr':
     specifier: ^2.0.0
     version: 2.0.0
@@ -97,6 +100,9 @@ devDependencies:
   eslint-plugin-prettier:
     specifier: ^4.2.1
     version: 4.2.1(eslint-config-prettier@8.8.0)(eslint@8.40.0)(prettier@2.8.8)
+  ffprobe:
+    specifier: link:@types/@ffprobe-installer/ffprobe
+    version: link:@types/@ffprobe-installer/ffprobe
   pino-pretty:
     specifier: ^10.0.0
     version: 10.0.0
