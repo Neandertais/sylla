@@ -8,5 +8,5 @@ export default function useUser(username?: string) {
     revalidateOnFocus: false,
   });
 
-  return { user: data?.data?.user as User , error, isLoading };
+  return { user: data?.user as User , error, isLoading };
 }

@@ -1,4 +1,4 @@
-import { RouteObject } from "react-router-dom";
+import { RouteObject, Router, RouterProvider } from "react-router-dom";
 
 import Course from "@routes/course";
 import Videos from "@routes/course/Videos";
@@ -7,6 +7,7 @@ import Create from "@routes/course/Create";
 import Settings from "@routes/course/Settings";
 import SettingsCourse from "@routes/course/SettingsCourse";
 import AnyCourse from "./AnyCourse";
+import { settingsTab } from "@routes/course/studio";
 
 const routes: RouteObject[] = [
   {
@@ -37,6 +38,7 @@ const routes: RouteObject[] = [
     path: "course/anycourse",
     element: <AnyCourse />,
   },
+  ...settingsTab,
 ];
 
 export default routes;

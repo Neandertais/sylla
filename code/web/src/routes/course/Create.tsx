@@ -12,7 +12,7 @@ import { toBase64 } from "@utils/converts";
 import { fetch } from "@services/api";
 
 export default function CourseCreate() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const [courseThumbnail, setCourseThumbnail] = useState<{
     file: RcFile;
@@ -21,19 +21,19 @@ export default function CourseCreate() {
 
   async function handleSubmit(form: any) {
     try {
-      console.log(form)
+      console.log(form);
       const response = await fetch.post("/courses", form);
-      const courseId = response.data.data.course.id
+      const courseId = response.data.data.course.id;
 
       if (courseThumbnail) {
-        const form = new FormData()
-        form.append('banner', courseThumbnail.file)
+        const form = new FormData();
+        form.append("banner", courseThumbnail.file);
 
-        await fetch.patch(`/courses/${courseId}`, form)
+        await fetch.patch(`/courses/${courseId}`, form);
       }
 
-      navigate(`/course/${courseId}`)
-    } catch {}
+      navigate(`/course/${courseId}`);
+    } catch { }
   }
 
   return (
@@ -107,6 +107,45 @@ export default function CourseCreate() {
                         max: 48,
                         message:
                           "Insira uma frase que contenha entre 8 e 48 caracteres",
+                      },
+                    ]}
+                  >
+                    <Input
+                      addonAfter={
+                        <DeleteOutlined
+                          className="text-red-600"
+                          onClick={() => remove(field.name)}
+                        />
+                      }
+                    />
+                  </Form.Item>
+                ))}
+                <div
+                  className="-mt-5 text-lg float-right p-2 cursor-pointer flex items-center gap-2"
+                  onClick={() => add()}
+                >
+                  <span className="text-sm">Adicionar</span> <PlusOutlined />
+                </div>
+              </div>
+            )}
+          </Form.List>
+
+          <Form.List name="keywords" initialValue={[""]}>
+            {(fields, { add, remove }) => (
+              <div>
+                <label className="block pb-2 mt-8">
+                  Quais são as palavras chave deste curso?
+                </label>
+                {fields.map((field) => (
+                  <Form.Item
+                    {...field}
+                    rules={[
+                      {
+                        required: true,
+                        min: 8,
+                        max: 48,
+                        message:
+                          "Insira uma palavra que contenha entre 8 e 48 caracteres",
                       },
                     ]}
                   >

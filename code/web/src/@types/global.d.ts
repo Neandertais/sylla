@@ -44,4 +44,17 @@ declare global {
       name?: string;
     };
   }
+
+  interface Section {
+    id: string
+    name: string
+    videos?: Video[]
+  }
+
+  interface Video {
+    id: string
+    name: string
+    description: string
+    thumbnailUrl: string
+  }
 }

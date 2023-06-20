@@ -2,13 +2,13 @@ import axios from "axios";
 
 export const BASE_URL = "http://localhost:3333/api/v1";
 
-export const fetch = axios.create({
+export const api = axios.create({
   baseURL: BASE_URL,
 });
 
-export const api = (url: string) => fetch.get(url).then((res) => res.data);
+export const fetch = (url: string) => api.get(url).then((res) => res);
 
-fetch.interceptors.request.use((request) => {
+api.interceptors.request.use((request) => {
   const token = localStorage.getItem("sylla.token");
 
   if (token) {
@@ -18,8 +18,8 @@ fetch.interceptors.request.use((request) => {
   return request;
 });
 
-fetch.interceptors.response.use(
-  (response) => response,
+api.interceptors.response.use(
+  (response) => response.data?.data,
   (error) => {
     if ((error.response?.status === 401)) {
       localStorage.removeItem("sylla.token");

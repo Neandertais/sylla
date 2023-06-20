@@ -19,8 +19,8 @@ export default function Courses() {
     );
   }
 
-  const boughtCourses: Course[] = bought.data.data;
-  const producedCourses: Course[] = produced.data.data;
+  const boughtCourses: Course[] = bought.data?.courses;
+  const producedCourses: Course[] = produced.data?.courses;
 
   return (
     <div className="py-10 max-w-5xl mx-auto">

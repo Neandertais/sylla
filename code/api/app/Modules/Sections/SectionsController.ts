@@ -17,7 +17,7 @@ export default class SectionsController {
     // Query sections with course ordered by position
     const sections = await Section.query().where('courseId', course).orderBy('position')
 
-    return response.ok(sections)
+    return response.ok({ data: sections })
   }
 
   public async create({ params, request, response, bouncer }: HttpContextContract) {
