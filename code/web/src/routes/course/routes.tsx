@@ -7,6 +7,7 @@ import Create from "@routes/course/Create";
 import Settings from "@routes/course/Settings";
 import SettingsCourse from "@routes/course/SettingsCourse";
 import AnyCourse from "./AnyCourse";
+import ShowVideo from "./ShowVideo";
 import { settingsTab } from "@routes/course/studio";
 
 const routes: RouteObject[] = [
@@ -37,6 +38,10 @@ const routes: RouteObject[] = [
   {
     path: "course/anycourse",
     element: <AnyCourse />,
+  },
+  {
+    path: "course/ShowVideo",
+    element: <ShowVideo />,
   },
   ...settingsTab,
 ];
