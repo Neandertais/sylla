@@ -12,7 +12,7 @@ export default function CourseDisplay({
   showPrice: boolean;
 }) {
   return (
-    <Link to={`/course/${course.id}`} >
+    <Link to={`/c/${course.id}`} >
       <div className="w-64">
         <div className={clsx(["w-64 h-80 rounded-lg overflow-hidden bg-gradient-to-tr", randomGradient()])}>
           {course?.bannerUrl && <img className="w-full h-full object-cover" src={course.bannerUrl} />}

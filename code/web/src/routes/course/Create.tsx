@@ -17,7 +17,7 @@ export default function CourseCreate() {
 
   async function handleSubmit(form: any) {
     try {
-      const response = await api.post("/courses", form) as any;
+      const response = (await api.post("/courses", form)) as any;
       const courseId = response.course.id;
 
       if (courseThumbnail) {
@@ -27,17 +27,17 @@ export default function CourseCreate() {
         await api.patch(`/courses/${courseId}`, form);
       }
 
-      navigate(`/course/${courseId}`);
+      navigate(`/c/${courseId}`);
     } catch {}
   }
 
   return (
-    <div className="flex flex-col max-w-7xl mx-auto py-4 sm:py-10">
-      <h1 className="font-sans font-bold text-2xl sm:ml-16">Criar Curso</h1>
+    <div className="flex flex-col my-10">
+      <h1 className="font-sans font-bold text-2xl">Criar Curso</h1>
 
       <Form
         layout="vertical"
-        className="flex flex-col-reverse sm:mx-32 lg:flex-row lg:mt-10 lg:gap-16"
+        className="flex flex-col-reverse lg:flex-row lg:mt-10 lg:gap-16"
         requiredMark={false}
         initialValues={{ price: 10 }}
         onFinish={handleSubmit}
@@ -127,9 +127,8 @@ export default function CourseCreate() {
                     rules={[
                       {
                         required: true,
-                        min: 8,
-                        max: 48,
-                        message: "Insira uma palavra que contenha entre 8 e 48 caracteres",
+                        pattern: /^[a-zA-z]+$/,
+                        message: "A palavra chave não pode conter números ou espaços",
                       },
                     ]}
                   >
