@@ -3,7 +3,7 @@ import { Button, Form, Input } from "antd";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { useAuth } from "@contexts/Authentication";
-import { fetch } from "@services/api";
+import { api } from "@services/api";
 
 import logo from "@assets/undraw_2.svg";
 
@@ -21,10 +21,10 @@ export default function SignIn() {
 
   async function handleSubmit(form: ISignInForm) {
     try {
-      const response = await fetch.post("/auth/signin", form);
+      const response = await api.post("/auth/signin", form) as any;
 
       auth.signIn({
-        token: response.data.data.token,
+        token: response.token,
       });
 
       navigate(0);

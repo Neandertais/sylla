@@ -7,9 +7,13 @@ import * as nsfw from 'nsfwjs'
 
 import { FFmpeg } from 'App/Services/ffmpeg'
 
-tf.enableProdMode()
+let model: nsfw.NSFWJS
 
-const model = nsfw.load()
+export async function initNSFW() {
+  tf.enableProdMode()
+  await tf.setBackend('tensorflow')
+  model = await nsfw.load()
+}
 
 export class Nsfw {
   public ffmpeg: FFmpeg
@@ -18,12 +22,20 @@ export class Nsfw {
     this.ffmpeg = new FFmpeg(videoPath)
   }
 
-  public async hasSexualContent() {
+  public async hasSexualContent(progress?: Function) {
     const outputDir = resolve(`/tmp/${randomUUID()}`)
 
     const metadata = await this.ffmpeg.metadata()
     const duration = metadata.format.duration!
 
+    let currentFrame = 0
+    const progressReport = setInterval(async () => {
+      const percentage = Math.round((currentFrame * 33.33) / duration!)
+
+      progress && progress(percentage)
+    }, 5_000)
+
+    let occurrences = 0
     for (let time = 0; time < duration!; time = time + 10) {
       this.deleteDirectory(outputDir, true)
 
@@ -35,23 +47,28 @@ export class Nsfw {
         const buffer = await readFile(resolve(outputDir, file))
         const image = tf.node.decodeBmp(buffer)
 
-        const predications = await (await model).classify(image, 3)
+        const predications = await model.classify(image, 3)
 
         image.dispose()
 
         for (const { className, probability } of predications) {
           if (!['Porn', 'Sexy', 'Hentai'].includes(className)) continue
 
-          if (probability > 0.85) {
-            this.deleteDirectory(outputDir, false)
+          if (probability < 0.85) continue
+          if (++occurrences < 10) continue
 
-            return true
-          }
+          this.deleteDirectory(outputDir, false)
+          clearInterval(progressReport)
+
+          return true
         }
+
+        currentFrame++
       }
     }
 
     this.deleteDirectory(outputDir, false)
+    clearInterval(progressReport)
 
     return false
   }

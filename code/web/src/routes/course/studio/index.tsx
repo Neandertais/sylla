@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { NavLink, Outlet, RouteObject } from "react-router-dom";
 
 import Content from "@routes/course/studio/Content";
+import Video from "@routes/course/studio/VideoSettings";
 
 export const settingsTab: RouteObject[] = [
   {
@@ -55,7 +56,17 @@ export const settingsTab: RouteObject[] = [
       },
       {
         path: "content",
-        element: <Content />,
+        element: <Outlet />,
+        children: [
+          {
+            path: "",
+            element: <Content />,
+          },
+          {
+            path: ":video",
+            element: <Video />,
+          },
+        ],
       },
       {
         path: "settings",

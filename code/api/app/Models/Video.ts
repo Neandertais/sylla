@@ -27,8 +27,17 @@ export default class Video extends BaseModel {
   @column()
   public duration: number
 
+  @column({
+    prepare: (value) => value.toString(),
+    consume: (value) => (value ? value.split(',') : value),
+  })
+  public qualities: string[]
+
   @column()
-  public status: 'processing' | 'sexualContent' | 'published'
+  public status: 'processing' | 'sexualContent' | 'published' | 'error'
+
+  @column()
+  public processingProgress: number
 
   @column({ serializeAs: null })
   public sectionId: string

@@ -1,5 +1,4 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Env from '@ioc:Adonis/Core/Env'
 
 import Section from 'App/Models/Section'
 import Video from 'App/Models/Video'
@@ -17,7 +16,7 @@ export default class VideosController {
       return response.notFound({ errors: [{ message: 'video not found' }] })
     }
 
-    return response.ok({ data: { video } })
+    return response.ok({ data: video })
   }
 
   public async create({ params, request, response, bouncer }: HttpContextContract) {
@@ -125,14 +124,22 @@ export default class VideosController {
         .increment('position', 1)
 
       video.position = videoBefore.position + 1
-    } else {
-      // Logic to reorder when not itemBefore
+    } else if (payload.section) {
+      const section = await Section.find(payload.section)
+
+      if (!section) {
+        return response.notFound({ errors: [{ message: 'section not found' }] })
+      }
+
+      video.sectionId = section.id
+      video.position = 1
+
       await Video.query()
         .where('sectionId', video.sectionId)
         .whereNot('id', video.id)
         .increment('position', 1)
-
-      video.position = 1
+    } else {
+      return response.unprocessableEntity()
     }
 
     await video.save()
@@ -165,14 +172,15 @@ export default class VideosController {
       return response.unsupportedMediaType({ errors: [{ message: 'unsupported video format' }] })
     }
 
-    const filename = `uploaded.${file.extname}`
-    await file.moveToDisk(video.id, { name: filename }, 'video')
+    new Promise(async () => {
+      const filename = `uploaded.${file.extname}`
+      await file.moveToDisk(video.id, { name: filename }, 'video')
 
-    await video.save()
+      video.merge({ status: 'processing' })
+      await video.save()
 
-    if (Env.get('NODE_ENV') !== 'test') {
-      process(file.filePath!)
-    }
+      process(file.filePath!, video)
+    })
 
     return response.noContent()
   }

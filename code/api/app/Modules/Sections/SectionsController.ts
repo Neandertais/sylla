@@ -15,7 +15,12 @@ export default class SectionsController {
     }
 
     // Query sections with course ordered by position
-    const sections = await Section.query().where('courseId', course).orderBy('position')
+    const sections = await Section.query()
+      .preload('videos', (videos) => {
+        videos.where('status', 'published').orWhere('status', 'processing').orderBy('position')
+      })
+      .where('courseId', course)
+      .orderBy('position')
 
     return response.ok({ data: sections })
   }

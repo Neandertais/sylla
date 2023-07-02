@@ -2,14 +2,10 @@ import { useState } from "react";
 import { Button, Form, Input, InputNumber, Upload } from "antd";
 import { useNavigate } from "react-router-dom";
 import { RcFile } from "antd/es/upload";
-import {
-  UploadOutlined,
-  PlusOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
+import { UploadOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 
 import { toBase64 } from "@utils/converts";
-import { fetch } from "@services/api";
+import { api } from "@services/api";
 
 export default function CourseCreate() {
   const navigate = useNavigate();
@@ -21,19 +17,18 @@ export default function CourseCreate() {
 
   async function handleSubmit(form: any) {
     try {
-      console.log(form);
-      const response = await fetch.post("/courses", form);
-      const courseId = response.data.data.course.id;
+      const response = await api.post("/courses", form) as any;
+      const courseId = response.course.id;
 
       if (courseThumbnail) {
         const form = new FormData();
         form.append("banner", courseThumbnail.file);
 
-        await fetch.patch(`/courses/${courseId}`, form);
+        await api.patch(`/courses/${courseId}`, form);
       }
 
       navigate(`/course/${courseId}`);
-    } catch { }
+    } catch {}
   }
 
   return (
@@ -94,9 +89,7 @@ export default function CourseCreate() {
           <Form.List name="willLearn" initialValue={[""]}>
             {(fields, { add, remove }) => (
               <div>
-                <label className="block pb-2">
-                  O que as pessoas vão aprender no curso?
-                </label>
+                <label className="block pb-2">O que as pessoas vão aprender no curso?</label>
                 {fields.map((field) => (
                   <Form.Item
                     {...field}
@@ -105,18 +98,12 @@ export default function CourseCreate() {
                         required: true,
                         min: 8,
                         max: 48,
-                        message:
-                          "Insira uma frase que contenha entre 8 e 48 caracteres",
+                        message: "Insira uma frase que contenha entre 8 e 48 caracteres",
                       },
                     ]}
                   >
                     <Input
-                      addonAfter={
-                        <DeleteOutlined
-                          className="text-red-600"
-                          onClick={() => remove(field.name)}
-                        />
-                      }
+                      addonAfter={<DeleteOutlined className="text-red-600" onClick={() => remove(field.name)} />}
                     />
                   </Form.Item>
                 ))}
@@ -133,9 +120,7 @@ export default function CourseCreate() {
           <Form.List name="keywords" initialValue={[""]}>
             {(fields, { add, remove }) => (
               <div>
-                <label className="block pb-2 mt-8">
-                  Quais são as palavras chave deste curso?
-                </label>
+                <label className="block pb-2 mt-8">Quais são as palavras chave deste curso?</label>
                 {fields.map((field) => (
                   <Form.Item
                     {...field}
@@ -144,18 +129,12 @@ export default function CourseCreate() {
                         required: true,
                         min: 8,
                         max: 48,
-                        message:
-                          "Insira uma palavra que contenha entre 8 e 48 caracteres",
+                        message: "Insira uma palavra que contenha entre 8 e 48 caracteres",
                       },
                     ]}
                   >
                     <Input
-                      addonAfter={
-                        <DeleteOutlined
-                          className="text-red-600"
-                          onClick={() => remove(field.name)}
-                        />
-                      }
+                      addonAfter={<DeleteOutlined className="text-red-600" onClick={() => remove(field.name)} />}
                     />
                   </Form.Item>
                 ))}
@@ -190,16 +169,9 @@ export default function CourseCreate() {
             >
               <div className="flex gap-4 flex-col sm:flex-row lg:flex-col">
                 <div className="bg-gradient-to-bl from-blue-600 to-cyan-500 w-64 h-80 rounded-xl overflow-hidden">
-                  <img
-                    className="w-full h-full object-cover"
-                    src={courseThumbnail?.base64}
-                    alt=""
-                  />
+                  <img className="w-full h-full object-cover" src={courseThumbnail?.base64} alt="" />
                 </div>
-                <Button
-                  className="self-start sm:self-end lg:self-start"
-                  icon={<UploadOutlined />}
-                >
+                <Button className="self-start sm:self-end lg:self-start" icon={<UploadOutlined />}>
                   Click to Upload
                 </Button>
               </div>

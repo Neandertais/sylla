@@ -57,6 +57,6 @@ test.group('Video processing', () => {
     const files = await readdir(output)
     await rm(output, { recursive: true, force: true })
 
-    assert.include(files, 'video_360p.mp4')
+    assert.include(files, '360p.mp4')
   })
 })

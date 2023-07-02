@@ -12,8 +12,10 @@ export default class extends BaseSchema {
       table.string('thumbnail', 48)
       table.integer('duration').unsigned()
       table.string('status', 18)
+      table.string('qualities', 56)
+      table.integer('processing_progress').unsigned()
 
-      table.string('section_id', 21).references('sections.id')
+      table.string('section_id', 21).references('sections.id').onDelete('CASCADE')
 
       table.timestamp('created_at', { useTz: true })
     })

@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { debounce } from "lodash-es";
 
 import { useAuth } from "@contexts/Authentication";
-import { fetch } from "@services/api";
+import { api } from "@services/api";
 
 import logo from "@assets/undraw.svg";
 
@@ -22,18 +22,18 @@ export default function SignUp() {
 
   async function handleSubmit(form: ISignUpForm) {
     try {
-      const response = await fetch.post("/auth/signup", {
+      const response = await api.post("/auth/signup", {
         ...form,
       });
       auth.signIn({
-        token: response.data.data.token,
+        token: response.token,
       });
       navigate(0);
     } catch (error) {}
   }
 
   const checkAlreadyUsed = debounce((field, value, setState) => {
-    fetch
+    api
       .post("users/check", { [field]: value })
       .then(() => {
         setState(null);

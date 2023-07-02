@@ -56,5 +56,6 @@ declare global {
     name: string
     description: string
     thumbnailUrl: string
+    created_at: string
   }
 }

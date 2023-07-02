@@ -1,8 +1,9 @@
 import useSWR from "swr";
-import { useCallback, useEffect, useState } from "react";
+
+import { useCallback } from "react";
+import { debounce } from "lodash-es";
 
 import { api } from "@services/api";
-import { debounce } from "lodash-es";
 
 export default function useStudio(id: string) {
   const { data: sections, isLoading, mutate } = useSWR<Section[]>(`/courses/${id}/sections`);
@@ -14,7 +15,13 @@ export default function useStudio(id: string) {
   }, []);
 
   const handleVideoChange = useCallback(async (current: string, before: string | null) => {
-    await api.patch(`videos/${current}/order`, { sectionBefore: before });
+    await api.patch(`videos/${current}/order`, { videoBefore: before });
+
+    mutate();
+  }, []);
+
+  const handleVideoChangeSection = useCallback(async (current: string, section: string) => {
+    await api.patch(`videos/${current}/order`, { section });
 
     mutate();
   }, []);
@@ -43,6 +50,7 @@ export default function useStudio(id: string) {
     isLoading,
     handleSectionChange,
     handleVideoChange,
+    handleVideoChangeSection,
     handleCreateSection,
     handleDeleteSection,
     handleUpdateSection,

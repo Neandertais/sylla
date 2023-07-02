@@ -3,28 +3,50 @@ import { dirname } from 'node:path'
 import { Nsfw } from 'App/Services/nsfw'
 import { videoQueue } from 'App/Services/queue'
 
-export function process(file: string) {
+import Video from 'App/Models/Video'
+
+export function process(file: string, video: Video) {
   videoQueue.push(async () => {
-    const nsfw = new Nsfw(file)
+    try {
+      const nsfw = new Nsfw(file)
 
-    if (await nsfw.hasSexualContent()) {
-      throw new Error('has sexual content')
-    }
+      const thumbnail = await nsfw.ffmpeg.thumbnail()
+      video.merge({ thumbnail })
+      await video.save()
 
-    const metadata = await nsfw.ffmpeg.metadata()
-    const qualities = ['360p', '480p', '720p', '1080p'].filter((quality) => {
-      return +quality.slice(0, -1) <= metadata.streams[0].height!
-    })
+      const hasSexualContent = await nsfw.hasSexualContent(async (currentProgress) => {
+        video.merge({ processingProgress: Math.round(currentProgress / 2) })
 
-    await nsfw.ffmpeg.resize(qualities, dirname(file))
+        await video.save()
+      })
 
-    return {
-      qualities,
-      duration: Math.floor(Number(metadata.streams[0].duration)),
+      if (hasSexualContent) {
+        video.merge({ status: 'sexualContent' })
+        await video.save()
+
+        return
+      }
+
+      const metadata = await nsfw.ffmpeg.metadata()
+      const qualities = ['360p', '480p', '720p', '1080p'].filter((quality) => {
+        return +quality.slice(0, -1) <= metadata.streams[0].height!
+      })
+
+      await nsfw.ffmpeg.resize(qualities, dirname(file), async (currentProgress) => {
+        video.merge({ processingProgress: Math.round(currentProgress / 2 + 50) })
+
+        await video.save()
+      })
+
+      video.merge({
+        qualities,
+        status: 'published',
+        duration: Math.floor(Number(metadata.format.duration!)),
+      })
+      await video.save()
+    } catch {
+      video.merge({ status: 'error' })
+      video.save().catch(() => {})
     }
   })
 }
-
-videoQueue.addListener('success', ({ detail }) => {
-  console.log(detail.result)
-})
