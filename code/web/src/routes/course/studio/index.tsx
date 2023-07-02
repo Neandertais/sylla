@@ -4,6 +4,8 @@ import { NavLink, Outlet, RouteObject } from "react-router-dom";
 
 import Content from "@routes/course/studio/Content";
 import Video from "@routes/course/studio/VideoSettings";
+import Preview from "@routes/course/studio/Preview";
+import Settings from "@routes/course/studio/Settings";
 
 export const settingsTab: RouteObject[] = [
   {
@@ -52,7 +54,7 @@ export const settingsTab: RouteObject[] = [
     children: [
       {
         path: "",
-        element: "Hello from visão geral",
+        element: <Preview />,
       },
       {
         path: "content",
@@ -70,7 +72,7 @@ export const settingsTab: RouteObject[] = [
       },
       {
         path: "settings",
-        element: "Hello from configurações",
+        element: <Settings />,
       },
     ],
   },

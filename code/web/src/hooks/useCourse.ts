@@ -6,5 +6,5 @@ export default function useCourse(id: string) {
     revalidateOnFocus: false,
   });
 
-  return { course: data?.data?.course as Course, error, isLoading };
+  return { course: data?.course as Course, error, isLoading };
 }

@@ -43,6 +43,10 @@ const routes: RouteObject[] = [
     path: "course/ShowVideo",
     element: <ShowVideo />,
   },
+  {
+    path: "/c/:id",
+    element: <Course />,
+  },
   ...settingsTab,
 ];
 

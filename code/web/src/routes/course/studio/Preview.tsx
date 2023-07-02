@@ -1,47 +1,13 @@
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { Button, Modal, Rate } from "antd";
+import { useParams } from "react-router-dom";
+import { Button, Rate } from "antd";
 
 import useCourse from "@hooks/useCourse";
 
-import { useAuth } from "@contexts/Authentication";
-import { api } from "@services/api";
+import { BsCheckLg } from "react-icons/bs";
 
-import { BsCheckLg, BsPencil } from "react-icons/bs";
-
-export default function Course() {
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
+export default function Preview() {
   const { id } = useParams();
-  const { user } = useAuth();
   const { course, isLoading } = useCourse(id!);
-
-  const isOwner = user?.username === course?.owner.username;
-
-  async function handleShowModal() {
-    if (!user) {
-      navigate(`/auth/signin?redirect=${pathname}`);
-    }
-
-    Modal.confirm({
-      title: "Deseja realmente comprar o curso?",
-      content: "Ao confirmar não será possível devolver o curso",
-      okText: "Sim",
-      cancelText: "Cancelar",
-      type: "confirm",
-      onOk: async () => {
-        try {
-          await api.post(`/courses/${course.id}/buy`);
-
-          navigate("/u/courses");
-        } catch {
-          Modal.error({
-            title: "Desculpe houve um erro",
-            content: "Verifique seu saldo, e tente novamente mais tarde",
-          });
-        }
-      },
-    });
-  }
 
   if (isLoading) {
     return (
@@ -54,18 +20,9 @@ export default function Course() {
   }
 
   return (
-    <div className="my-10 max-w-6xl mx-auto">
+    <div className="mb-10">
       <div className="flex gap-10">
         <div className="flex flex-col flex-1 py-4">
-          {isOwner && (
-            <Link
-              to={`/c/${course.id}/studio`}
-              className="flex self-start items-center gap-2 mb-3 px-3 py-1 border rounded-md hover:border-blue-200"
-            >
-              <BsPencil />
-              Editar
-            </Link>
-          )}
           <h1 className="font-black text-2xl">{course.name}</h1>
           <p className="mt-4">{course?.description}</p>
           <div className="font-bold mt-3 flex gap-4">
@@ -87,11 +44,7 @@ export default function Course() {
               </span>
               woqs
             </p>
-            {!isOwner && (
-              <Button type="primary" onClick={handleShowModal}>
-                Comprar
-              </Button>
-            )}
+            <Button type="primary">Comprar</Button>
           </div>
         </div>
         <div className="w-64 h-80 rounded-xl overflow-hidden">
