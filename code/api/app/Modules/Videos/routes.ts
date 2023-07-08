@@ -14,6 +14,7 @@ export default function videosRoutes() {
     Route.delete('/:id', 'VideosController.delete').middleware('auth')
     Route.patch('/:id/order', 'VideosController.updateOrder').middleware('auth')
     Route.patch('/:id/upload', 'VideosController.upload').middleware('auth')
+    Route.get('/:id/watch', 'VideosController.watch')
   })
     .prefix('videos')
     .where('id', /^[a-zA-Z0-9_-]+$/)

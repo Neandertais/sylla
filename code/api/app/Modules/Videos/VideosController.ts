@@ -1,5 +1,8 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
+import Drive from '@ioc:Adonis/Core/Drive'
+import { createReadStream } from 'node:fs'
+
 import Section from 'App/Models/Section'
 import Video from 'App/Models/Video'
 import { process } from 'App/Services/videoProcessing'
@@ -183,5 +186,42 @@ export default class VideosController {
     })
 
     return response.noContent()
+  }
+
+  public async watch({ params: { id }, request, response }: HttpContextContract) {
+    const video = await Video.query()
+      .where('id', id)
+      .preload('section', (section) => section.preload('course'))
+      .first()
+
+    if (!video) {
+      return response.notFound({ errors: [{ message: 'video not found' }] })
+    }
+
+    // await bouncer.authorize('watchVideo', video)
+
+    const quality = request.qs().q || '360p'
+
+    if (!video.qualities.includes(quality)) {
+      return response.notFound({ errors: [{ message: 'quality not found' }] })
+    }
+
+    const range = request.headers().range || ''
+    const location = Drive.use('video').makePath(video.id + '/' + quality + '.mp4')
+
+    const { size } = await Drive.use('video').getStats(video.id + '/' + quality + '.mp4')
+
+    const CHUNK_SIZE = 10 ** 6 // 1MB
+
+    const start = Number(range.replace(/\D/g, ''))
+    const end = Math.min(start + CHUNK_SIZE, size - 1)
+    const contentLength = end - start + 1
+
+    response.header('Content-Range', `bytes ${start}-${end}/${size}`)
+    response.header('Accept-Ranges', 'bytes')
+    response.header('Content-Length', contentLength)
+    response.header('Content-Type', 'video/mp4')
+
+    return response.status(206).stream(createReadStream(location, { start, end }))
   }
 }

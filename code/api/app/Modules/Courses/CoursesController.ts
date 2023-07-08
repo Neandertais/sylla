@@ -61,7 +61,7 @@ export default class CoursesController {
             owner: { fields: ['username', 'name'] },
             sections: {
               fields: ['id', 'name'],
-              relations: { videos: { fields: ['id', 'name'] } },
+              relations: { videos: { fields: ['id', 'name', 'thumbnailUrl'] } },
             },
           },
         }),

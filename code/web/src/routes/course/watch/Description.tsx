@@ -1,14 +1,11 @@
 import { useState } from "react";
 
-export default function Description() {
+export default function Description({ description }: { description: string }) {
   const [showFullDescription, setShowFullDescription] = useState(false);
 
   const toggleDescription = () => {
     setShowFullDescription(!showFullDescription);
   };
-
-  const description =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ac neque sed risus sollicitudin fringilla ac vel purus. In nec lorem justo. Sed eu arcu ac tellus fringilla consectetur. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ac neque sed risus sollicitudin fringilla ac vel purus. In nec lorem justo. Sed eu arcu ac tellus fringilla consectetur.";
 
   const truncatedDescription = description.substring(0, 50);
   const isTruncated = description.length > 50;

@@ -4,11 +4,20 @@ import { Popover } from "antd";
 import { FaCog } from "react-icons/fa";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 
-export default function Settings({ state, dispatch }: { state: any; dispatch: any }) {
+export default function Settings({
+  playerContainer,
+  qualities,
+  state,
+  dispatch,
+}: {
+  playerContainer: any;
+  qualities: string[];
+  state: any;
+  dispatch: any;
+}) {
   const [popoverIsOpen, setPopoverIsOpen] = useState(false);
   const [tab, setTab] = useState<"menu" | "quality" | "speed">("menu");
 
-  const qualities = ["360p", "480p", "720p", "1080p"];
   const speeds = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 
   const menu = (
@@ -90,6 +99,7 @@ export default function Settings({ state, dispatch }: { state: any; dispatch: an
     <Popover
       open={popoverIsOpen}
       onOpenChange={(state) => setPopoverIsOpen(state)}
+      getPopupContainer={() => playerContainer.current}
       placement="topRight"
       trigger="click"
       arrow={false}
