@@ -21,7 +21,7 @@ export default function SignIn() {
 
   async function handleSubmit(form: ISignInForm) {
     try {
-      const response = await api.post("/auth/signin", form) as any;
+      const response = (await api.post("/auth/signin", form)) as any;
 
       auth.signIn({
         token: response.token,

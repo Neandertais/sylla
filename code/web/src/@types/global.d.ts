@@ -43,19 +43,20 @@ declare global {
       username: string;
       name?: string;
     };
+    sections: Section[];
   }
 
   interface Section {
-    id: string
-    name: string
-    videos?: Video[]
+    id: string;
+    name: string;
+    videos?: Video[];
   }
 
   interface Video {
-    id: string
-    name: string
-    description: string
-    thumbnailUrl: string
-    created_at: string
+    id: string;
+    name: string;
+    description: string;
+    thumbnailUrl: string;
+    created_at: string;
   }
 }
