@@ -8,7 +8,7 @@ import { IoIosArrowForward } from "react-icons/io";
 
 import type useStudio from "@services/studio";
 import VideoUpload from "./VideoUpload";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Modal } from "antd";
 
 export default function Panel({
@@ -119,6 +119,8 @@ function VideoPanel({
 }) {
   const containerRef = useRef(null);
 
+  const { id } = useParams();
+
   useEffect(() => {
     const node = containerRef.current;
     addDraggable(node);
@@ -132,11 +134,13 @@ function VideoPanel({
   return (
     <div ref={containerRef} data-type="video" data-id={video.id} className="border-t first-of-type:border-t-0 group">
       <div className="flex gap-6 items-center px-6 py-3 group-[.selected]:opacity-0 group-[.dragging]:border group-[.dragging]:rounded-md">
-        <div className="relative w-[200px] max-w-[120px] aspect-video bg-zinc-200 rounded-md overflow-hidden">
-          {video.thumbnailUrl && (
-            <img className="absolute w-full h-full object-cover" src={video.thumbnailUrl} alt="" />
-          )}
-        </div>
+        <Link to={`/watch/${id}/${video.id}`} className="w-full max-w-[120px]">
+          <div className="relative w-full aspect-video bg-zinc-200 rounded-md overflow-hidden">
+            {video.thumbnailUrl && (
+              <img className="absolute w-full h-full object-cover" src={video.thumbnailUrl} alt="" />
+            )}
+          </div>
+        </Link>
         <div className="w-full flex items-center justify-between">
           <div className="flex-[2]">
             <p className="font-bold">{video.name}</p>

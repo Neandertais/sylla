@@ -76,7 +76,7 @@ export default function Header() {
                     </Link>
                     <Link
                       className="mx-2 px-2 py-1 rounded-md hover:bg-gray-100 hover:text-inherit"
-                      to="/course/create"
+                      to="/c/create"
                     >
                       Criar Curso
                     </Link>

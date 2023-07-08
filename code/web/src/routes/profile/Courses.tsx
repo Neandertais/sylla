@@ -23,22 +23,22 @@ export default function Courses() {
   const producedCourses: Course[] = produced.data?.courses;
 
   return (
-    <div className="py-10 max-w-5xl mx-auto">
+    <div className="py-10">
       <h2 className="font-bold text-2xl mb-6">Cursos adquiridos</h2>
-      <div className="flex justify-start flex-wrap gap-12">
+      <div className="grid grid-cols-2 gap-5 screen sm:grid-cols-3 lg:grid-cols-4">
         {boughtCourses.length ? (
           boughtCourses.map((course) => (
-            <CourseDisplay key={course.id} course={course} showRate={false} showPrice={false} />
+            <CourseDisplay key={course.id} course={course} showRate={false} showPrice={false} showWatch={true} />
           ))
         ) : (
           <p>Nenhum curso comprado</p>
         )}
       </div>
       <h2 className="font-bold text-2xl mt-10 mb-6">Meus cursos</h2>
-      <div className="flex justify-start flex-wrap gap-12">
+      <div className="grid grid-cols-2 gap-5 screen sm:grid-cols-3 lg:grid-cols-4">
         {producedCourses.length ? (
           producedCourses.map((course) => (
-            <CourseDisplay key={course.id} course={course} showRate={false} showPrice={false} />
+            <CourseDisplay key={course.id} course={course} showRate={false} showPrice={false} showWatch={true} />
           ))
         ) : (
           <p>Nenhum curso produzido</p>

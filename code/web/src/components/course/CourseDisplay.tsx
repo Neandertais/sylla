@@ -1,4 +1,4 @@
-import { Rate } from "antd";
+import { Button, Rate } from "antd";
 import clsx from "clsx";
 import { Link } from "react-router-dom";
 
@@ -6,34 +6,43 @@ export default function CourseDisplay({
   course,
   showRate,
   showPrice,
+  showWatch,
 }: {
   course: Course;
   showRate: boolean;
   showPrice: boolean;
+  showWatch: boolean;
 }) {
   return (
-    <Link to={`/c/${course.id}`} >
-      <div className="w-64">
-        <div className={clsx(["w-64 h-80 rounded-lg overflow-hidden bg-gradient-to-tr", randomGradient()])}>
+    <div className="flex flex-col w-full h-full gap-5">
+      <Link to={`/c/${course.id}`}>
+        <div className={clsx(["w-full aspect-[8/10] rounded-lg overflow-hidden bg-gradient-to-tr", randomGradient()])}>
           {course?.bannerUrl && <img className="w-full h-full object-cover" src={course.bannerUrl} />}
         </div>
-        <div className="px-2 mt-2">
-          <h3 className="font-bold uppercase text-base">{course.name}</h3>
-          {showRate && (
-            <div className="flex items-center mt-1">
-              <span className="font-black text-yellow-500 text-xs">4.5</span>
-              <Rate className="scale-[.68] -mt-1 -ml-3" disabled allowHalf count={5} value={4.5} />
-            </div>
-          )}
-          {showPrice && (
-            <p className="">
-              <span className="font-bold text-base mr-4">R$ 99,99</span>
-              <span className="line-through">R$ 99,99</span>
-            </p>
-          )}
-        </div>
+      </Link>
+      <div className="flex flex-col px-2">
+        <h3 className="font-bold uppercase text-base">{course.name}</h3>
+        {showRate && (
+          <div className="flex items-center mt-1">
+            <span className="font-black text-yellow-500 text-xs">4.5</span>
+            <Rate className="scale-[.68] -mt-1 -ml-3" disabled allowHalf count={5} value={4.5} />
+          </div>
+        )}
+        {showPrice && (
+          <p className="">
+            <span className="font-bold text-base mr-4">R$ 99,99</span>
+            <span className="line-through">R$ 99,99</span>
+          </p>
+        )}
       </div>
-    </Link>
+      {showWatch && (
+        <Link className="mt-auto" to={`/watch/${course.id}`}>
+          <Button className="w-full font-bold" type="primary">
+            Assistir
+          </Button>
+        </Link>
+      )}
+    </div>
   );
 }
 

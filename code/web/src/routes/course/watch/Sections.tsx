@@ -15,7 +15,9 @@ export default function Sections({
 }) {
   return (
     <div className="w-full lg:w-4/12">
-      <Collapse>
+      <Collapse
+        defaultActiveKey={sections.find((section) => section.videos?.find((video) => video.id === currentVideoID))?.id}
+      >
         {sections.map((section) => (
           <Panel key={section.id} header={section.name}>
             {section.videos?.map((video) => (
