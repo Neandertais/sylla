@@ -1,11 +1,11 @@
 import { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Avatar, Badge, Input } from "antd";
-import { TbMoneybag } from "react-icons/tb";
+import { Avatar, Input } from "antd";
 
 import { useAuth } from "@contexts/Authentication";
 
-import { AiOutlineBell, AiOutlineSearch } from "react-icons/ai";
+import { TbMoneybag } from "react-icons/tb";
+import { AiOutlineSearch } from "react-icons/ai";
 import { BiArrowBack } from "react-icons/bi";
 
 export default function Header() {
@@ -28,7 +28,7 @@ export default function Header() {
           </Link>
           <Input.Search className="absolute left-1/2 -translate-x-1/2 w-2/5 max-w-80 hidden sm:block" />
           <div className="flex items-center gap-3 sm:gap-6">
-            <details ref={searchMenu} className="group sm:hidden">
+            <details ref={searchMenu} className="group z-20 sm:hidden">
               <summary className="flex items-center list-none group-open:before:content-[''] group-open:before:fixed group-open:before:bottom-0 group-open:before:right-0 group-open:before:top-0 group-open:before:left-0">
                 <AiOutlineSearch size={20} />
               </summary>
@@ -45,22 +45,18 @@ export default function Header() {
             </details>
             {user ? (
               <>
-                <Badge count={5} className="flex items-center" size="small" offset={[0, 4]}>
-                  <AiOutlineBell size={22} />
-                </Badge>
+                <p className="flex items-center font-semibold">
+                  <TbMoneybag className="mr-2" color="#f59e0b" />
+                  {new Intl.NumberFormat(undefined, {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format(user.cash).substring(2)}
+                </p>
                 <details className="group">
                   <summary className="list-none group-open:before:content-[''] group-open:before:fixed group-open:before:bottom-0 group-open:before:right-0 group-open:before:top-0 group-open:before:left-0">
                     <Avatar className="cursor-pointer" src={user?.avatarUrl} />
                   </summary>
                   <div className="flex flex-col gap-2 py-3 absolute bg-white shadow-md border w-44 right-4 top-16 rounded-md">
-                    <p className="mx-2 px-2 py-1 rounded-md hover:bg-gray-100 flex items-center">
-                      <TbMoneybag className="mr-2" color="#f59e0b"/>
-                      {new Intl.NumberFormat(undefined, {
-                        style: "currency",
-                        currency: "USD",
-                      }).format(user.cash)}
-                      {" woqs"}
-                    </p>
                     <Link
                       className="mx-2 px-2 py-1 rounded-md hover:bg-gray-100 hover:text-inherit"
                       to={`/u/${user.username}`}
@@ -74,10 +70,7 @@ export default function Header() {
                     <Link className="mx-2 px-2 py-1 rounded-md hover:bg-gray-100 hover:text-inherit" to="/u/courses">
                       Meus Cursos
                     </Link>
-                    <Link
-                      className="mx-2 px-2 py-1 rounded-md hover:bg-gray-100 hover:text-inherit"
-                      to="/c/create"
-                    >
+                    <Link className="mx-2 px-2 py-1 rounded-md hover:bg-gray-100 hover:text-inherit" to="/c/create">
                       Criar Curso
                     </Link>
                     <div className="border border-t-0 w-full" />

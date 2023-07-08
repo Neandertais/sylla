@@ -29,9 +29,20 @@ export default function CourseDisplay({
           </div>
         )}
         {showPrice && (
-          <p className="">
-            <span className="font-bold text-base mr-4">R$ 99,99</span>
-            <span className="line-through">R$ 99,99</span>
+          <p className="flex items-end">
+            <span className="font-bold text-xl mr-4">
+              {new Intl.NumberFormat(undefined, {
+                style: "currency",
+                currency: "USD",
+              }).format(course.price)}
+              {" woqs"}
+            </span>
+            <span className="line-through text-sm">
+              {new Intl.NumberFormat(undefined, {
+                style: "currency",
+                currency: "USD",
+              }).format(+course.price + 30)}
+            </span>
           </p>
         )}
       </div>

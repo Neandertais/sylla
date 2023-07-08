@@ -145,6 +145,36 @@ export default function Settings() {
             )}
           </Form.List>
 
+          <Form.List name="keywords">
+            {(fields, { add, remove }) => (
+              <div>
+                <label className="block pb-2 mt-8">Quais são as palavras chave deste curso?</label>
+                {fields.map((field) => (
+                  <Form.Item
+                    {...field}
+                    rules={[
+                      {
+                        required: true,
+                        pattern: /^[a-zA-z]+$/,
+                        message: "A palavra chave não pode conter números ou espaços",
+                      },
+                    ]}
+                  >
+                    <Input
+                      addonAfter={<DeleteOutlined className="text-red-600" onClick={() => remove(field.name)} />}
+                    />
+                  </Form.Item>
+                ))}
+                <div
+                  className="-mt-5 text-lg float-right p-2 cursor-pointer flex items-center gap-2"
+                  onClick={() => add()}
+                >
+                  <span className="text-sm">Adicionar</span> <PlusOutlined />
+                </div>
+              </div>
+            )}
+          </Form.List>
+
           <Form.Item className="mt-20">
             <div className="flex justify-end">
               <Button onClick={handleShowModal} className="mr-4" danger>
