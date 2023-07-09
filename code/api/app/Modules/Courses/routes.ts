@@ -4,6 +4,7 @@ export default function coursesRoutes() {
   Route.group(() => {
     Route.get('', 'CoursesController.list')
     Route.post('', 'CoursesController.create').middleware('auth')
+    Route.get('/search', 'CoursesController.search')
     Route.get('/:id', 'CoursesController.find')
     Route.route('/:id', ['PATCH', 'PUT'], 'CoursesController.update').middleware('auth')
     Route.delete('/:id', 'CoursesController.delete').middleware('auth')

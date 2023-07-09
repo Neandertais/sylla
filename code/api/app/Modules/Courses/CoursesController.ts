@@ -69,6 +69,18 @@ export default class CoursesController {
     }
   }
 
+  public async search({ request }: HttpContextContract) {
+    const { q: query } = request.qs()
+
+    const courses = await Course.query().whereRaw("fts @@ websearch_to_tsquery('portuguese', ?)", [
+      query || ' ',
+    ])
+
+    return {
+      data: courses,
+    }
+  }
+
   public async create({ auth: { user }, request, response }: HttpContextContract) {
     const payload = await request.validate(CourseCreateValidator)
 

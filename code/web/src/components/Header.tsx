@@ -19,6 +19,10 @@ export default function Header() {
     searchMenu.current.open = false;
   }
 
+  function handleSearch(text: string) {
+    navigate(`/search?q=${encodeURI(text)}`);
+  }
+
   return (
     <div className="z-50 relative">
       <header className="shadow-md bg-white">
@@ -26,7 +30,10 @@ export default function Header() {
           <Link to="/" className="hover:text-black">
             <h1 className="font-bold font-base text-xl">SYLLA</h1>
           </Link>
-          <Input.Search className="absolute left-1/2 -translate-x-1/2 w-2/5 max-w-80 hidden sm:block" />
+          <Input.Search
+            className="absolute left-1/2 -translate-x-1/2 w-2/5 max-w-80 hidden sm:block"
+            onSearch={handleSearch}
+          />
           <div className="flex items-center gap-3 sm:gap-6">
             <details ref={searchMenu} className="group z-20 sm:hidden">
               <summary className="flex items-center list-none group-open:before:content-[''] group-open:before:fixed group-open:before:bottom-0 group-open:before:right-0 group-open:before:top-0 group-open:before:left-0">
@@ -40,6 +47,7 @@ export default function Header() {
                     </div>
                   }
                   className="bg-white"
+                  onSearch={handleSearch}
                 />
               </div>
             </details>
@@ -50,7 +58,9 @@ export default function Header() {
                   {new Intl.NumberFormat(undefined, {
                     style: "currency",
                     currency: "BRL",
-                  }).format(user.cash).substring(2)}
+                  })
+                    .format(user.cash)
+                    .substring(2)}
                 </p>
                 <details className="group">
                   <summary className="list-none group-open:before:content-[''] group-open:before:fixed group-open:before:bottom-0 group-open:before:right-0 group-open:before:top-0 group-open:before:left-0">
