@@ -26,13 +26,13 @@ export default function Preview() {
           <h1 className="font-black text-2xl">{course.name}</h1>
           <p className="mt-4">{course?.description}</p>
           <div className="font-bold mt-3 flex gap-4">
-            <span>20 alunos</span>
-            <span>10 avaliações</span>
+            <span>{course.students} alunos</span>
+            <span>{course.rating?.count} avaliações</span>
             <span>Criado por {course.owner?.name || course.owner.username}</span>
           </div>
           <div className="mt-3 flex gap-6 items-center">
-            <Rate disabled defaultValue={3} />
-            <span>(5 avaliações)</span>
+            <Rate disabled allowHalf value={course.rating?.rate} />
+            <span>({course.rating?.count} avaliações)</span>
           </div>
           <div className="mt-auto flex gap-12 items-center">
             <p>

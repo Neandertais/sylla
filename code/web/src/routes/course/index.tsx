@@ -69,10 +69,12 @@ export default function Course() {
           <div className="font-bold mt-3 flex gap-4">
             <span>{course.students} alunos</span>
             <span>{course.rating?.count} avaliações</span>
-            <span>Criado por {course.owner?.name || course.owner.username}</span>
+            <Link to={`/u/${course.owner.username}`}>
+              <span>Criado por {course.owner?.name || course.owner.username}</span>
+            </Link>
           </div>
           <div className="mt-3 flex gap-6 items-center">
-            <Rate disabled value={course.rating?.rate} />
+            <Rate disabled allowHalf value={course.rating?.rate} />
             <span>({course.rating?.count} avaliações)</span>
           </div>
           <div className="mt-auto flex gap-12 items-center">

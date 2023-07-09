@@ -34,19 +34,17 @@ export default function Profile() {
       <div className="flex">
         <div className="flex flex-col flex-1">
           <p className="font-black text-lg text-gray-600">INSTRUTOR</p>
-          <h2 className="font-bold text-4xl">
-            {user?.name ? user.name : user?.username}
-          </h2>
+          <h2 className="font-bold text-4xl">{user?.name ? user.name : user?.username}</h2>
           <p className="mt-2 font-bold text-base">{user?.profession}</p>
 
           <div className="flex gap-6 mt-auto">
             <div>
               <p className="font-black text-gray-500">Total de alunos</p>
-              <p className="font-black text-3xl">5.000</p>
+              <p className="font-black text-3xl">{user.students}</p>
             </div>
             <div>
               <p className="font-black text-gray-500">Avaliações</p>
-              <p className="font-black text-3xl">5.000</p>
+              <p className="font-black text-3xl">{user.evaluations}</p>
             </div>
           </div>
 
@@ -56,12 +54,7 @@ export default function Profile() {
 
               return (
                 link && (
-                  <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href={link}
-                    key={platform}
-                  >
+                  <a target="_blank" rel="noopener noreferrer" href={link} key={platform}>
                     {mappedProfileIcons[platform]()}
                   </a>
                 )

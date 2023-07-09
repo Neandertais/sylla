@@ -7,6 +7,7 @@ import UpdateUserValidator from 'App/Validators/UpdateUserValidator'
 import UserCheckValidator from 'App/Validators/UserCheckValidator'
 
 import User from 'App/Models/User'
+import Database from '@ioc:Adonis/Lucid/Database'
 
 export default class UsersController {
   public async show({ auth: { user } }: HttpContextContract) {
@@ -28,8 +29,22 @@ export default class UsersController {
       return response.notFound({ errors: [{ message: 'user not found' }] })
     }
 
+    const [{ students }, { evaluations }] = await Promise.all([
+      Database.query()
+        .from('users')
+        .count('*', 'students')
+        .join('courses', 'users.username', 'courses.owner_id')
+        .join('course_students', 'course_students.course_id', 'courses.id')
+        .first(),
+      Database.query()
+        .from('users')
+        .count('*', 'evaluations')
+        .join('courses', 'users.username', 'courses.owner_id')
+        .join('course_ratings', 'course_ratings.course_id', 'courses.id')
+        .first(),
+    ])
     return {
-      data: { user: user.serialize({ fields: { omit: ['cash'] } }) },
+      data: { user: { ...user.serialize({ fields: { omit: ['cash'] } }), students, evaluations } },
     }
   }
 

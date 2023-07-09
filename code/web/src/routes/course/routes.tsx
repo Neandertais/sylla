@@ -41,5 +41,7 @@ function WatchRedirect() {
     return <Skeleton />;
   }
 
-  return <Navigate to={course.sections[0]?.videos![0]?.id || ""} />;
+  const firstVideoID = course.sections[0]?.videos![0]?.id;
+
+  return firstVideoID ? <Navigate to={firstVideoID} /> : <Navigate to="/" />;
 }

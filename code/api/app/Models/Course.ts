@@ -3,6 +3,7 @@ import {
   BaseModel,
   BelongsTo,
   HasMany,
+  afterFetch,
   beforeCreate,
   belongsTo,
   column,
@@ -14,7 +15,7 @@ import { nanoid } from 'nanoid'
 
 import User from 'App/Models/User'
 import Section from 'App/Models/Section'
-import CourseRating from './CourseRating'
+import Database from '@ioc:Adonis/Lucid/Database'
 
 export default class Course extends BaseModel {
   @column({ isPrimary: true })
@@ -66,8 +67,27 @@ export default class Course extends BaseModel {
   @column.dateTime({ serializeAs: null, autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
+  @computed()
+  public rating: { count: number; rate: number }
+
   @beforeCreate()
   public static async randomID(course: Course) {
     course.id = nanoid()
+  }
+
+  @afterFetch()
+  public static async calculateRating(courses: Course[]) {
+    await Promise.all(
+      courses.map(async (course) => {
+        const { count, rate } = await Database.query()
+          .from('course_ratings')
+          .where('course_id', course.id)
+          .count('*', 'count')
+          .avg('rate', 'rate')
+          .first()
+
+        course.rating = { count, rate: +rate }
+      })
+    )
   }
 }

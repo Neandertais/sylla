@@ -24,8 +24,8 @@ export default function CourseDisplay({
         <h3 className="font-bold uppercase text-base">{course.name}</h3>
         {showRate && (
           <div className="flex items-center mt-1">
-            <span className="font-black text-yellow-500 text-xs">4.5</span>
-            <Rate className="scale-[.68] -mt-1 -ml-3" disabled allowHalf count={5} value={4.5} />
+            <span className="font-black text-yellow-500 text-xs">{course.rating?.rate}</span>
+            <Rate className="scale-[.68] -mt-1 -ml-3" disabled allowHalf count={5} value={course.rating?.rate} />
           </div>
         )}
         {showPrice && (

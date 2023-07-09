@@ -30,6 +30,8 @@ declare global {
       linkedin?: string;
       tiktok?: string;
     };
+    students?: number;
+    evaluations?: number;
   }
 
   interface Course {
