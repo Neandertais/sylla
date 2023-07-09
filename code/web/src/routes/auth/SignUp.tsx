@@ -22,9 +22,9 @@ export default function SignUp() {
 
   async function handleSubmit(form: ISignUpForm) {
     try {
-      const response = await api.post("/auth/signup", {
+      const response = (await api.post("/auth/signup", {
         ...form,
-      });
+      })) as any;
       auth.signIn({
         token: response.token,
       });

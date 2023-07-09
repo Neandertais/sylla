@@ -1,5 +1,5 @@
 FROM node:18-slim as base
-RUN npm i -g pnpm
+RUN npm i -g pnpm pm2
 
 
 # Install dependecies
@@ -16,7 +16,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN node ace build --production
+RUN node ace build --production --ignore-ts-errors
 
 
 # Development container
@@ -49,11 +49,11 @@ ENV NODE_ENV production
 ENV PORT $PORT
 ENV HOST 0.0.0.0
 
-COPY --from=deps /app/package.json /app/yarn.lock ./
+COPY --from=deps /app/package.json /app/pnpm-lock.yaml ./
 COPY --from=builder /app/build .
 
 RUN pnpm i --frozen-lockfile --prod
 
 EXPOSE $PORT
 
-CMD [ "node", "server.js" ]
+CMD [ "pm2-runtime", "server.js" ]

@@ -4,7 +4,7 @@ import { omit } from "underscore";
 import { PlusOutlined } from "@ant-design/icons";
 
 import useUser from "@hooks/useUser";
-import { fetch } from "@services/api";
+import { api } from "@services/api";
 import { useAuth } from "@contexts/Authentication";
 import { toBase64 } from "@utils/converts";
 import { mappedProfileIcons } from "@routes/profile";
@@ -49,10 +49,10 @@ export default function UserPerfil() {
       const form = new FormData();
       form.append("avatar", avatarFile);
 
-      await fetch.patch(`users/${user?.username}`, form);
+      await api.patch(`users/${user?.username}`, form);
     }
 
-    await fetch.patch(`users/${user?.username}`, data);
+    await api.patch(`users/${user?.username}`, data);
     location.reload();
   }
 

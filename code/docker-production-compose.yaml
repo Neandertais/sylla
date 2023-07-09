@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  web:
+    container_name: web
+    build: 
+      context: ./web
+      dockerfile: Dockerfile
+      args:
+        API_URL: https://localhost:8080
+    depends_on:
+      - api
+    ports:
+      - 8080:8080
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+
+  api:
+    container_name: api
+    build:
+      context: ./api
+      target: production
+    depends_on:
+      - db
+    env_file:
+      - .env.production
+
+  db:
+    container_name: db
+    image: postgres:15-alpine
+    volumes:
+      - ./api/scripts/postgresql:/docker-entrypoint-initdb.d
+      - db-volume:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_MULTIPLE_DATABASES: ${PG_DB_NAME}, ${PG_DB_NAME}_test
+
+volumes:
+  db-volume:
