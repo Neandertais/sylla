@@ -18,6 +18,14 @@ export const { actions } = Bouncer.define('updateUser', (user: User, updateUser:
   .define('buyCourse', (buyerUser: User, course: Course) => {
     return buyerUser.username !== course.ownerId
   })
+  .define('evaluateCourse', async (user: User, course: Course) => {
+    const student = await CourseStudent.query()
+      .where('user_id', user.username)
+      .where('course_id', course.id)
+      .first()
+
+    return student ? true : false
+  })
   .define('createSection', (user: User, course: Course) => {
     return user.username === course.ownerId
   })

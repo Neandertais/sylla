@@ -6,6 +6,7 @@ import {
   beforeCreate,
   belongsTo,
   column,
+  computed,
   hasMany,
 } from '@ioc:Adonis/Lucid/Orm'
 import Env from '@ioc:Adonis/Core/Env'
@@ -13,6 +14,7 @@ import { nanoid } from 'nanoid'
 
 import User from 'App/Models/User'
 import Section from 'App/Models/Section'
+import CourseRating from './CourseRating'
 
 export default class Course extends BaseModel {
   @column({ isPrimary: true })

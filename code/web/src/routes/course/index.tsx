@@ -1,10 +1,10 @@
+import { useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Button, Modal, Rate } from "antd";
 
 import useCourse from "@hooks/useCourse";
-
-import { useAuth } from "@contexts/Authentication";
 import { api } from "@services/api";
+import { useAuth } from "@contexts/Authentication";
 
 import { BsCheckLg, BsPencil } from "react-icons/bs";
 
@@ -14,8 +14,6 @@ export default function Course() {
   const { id } = useParams();
   const { user } = useAuth();
   const { course, isLoading } = useCourse(id!);
-
-  const isOwner = user?.username === course?.owner.username;
 
   async function handleShowModal() {
     if (!user) {
@@ -55,9 +53,9 @@ export default function Course() {
 
   return (
     <div className="my-10 max-w-6xl mx-auto">
-      <div className="flex gap-10">
+      <div className="flex gap-10 flex-col items-center md:flex-row">
         <div className="flex flex-col flex-1 py-4">
-          {isOwner && (
+          {course.isOwner && (
             <Link
               to={`/c/${course.id}/studio`}
               className="flex self-start items-center gap-2 mb-3 px-3 py-1 border rounded-md hover:border-blue-200"
@@ -69,13 +67,13 @@ export default function Course() {
           <h1 className="font-black text-2xl">{course.name}</h1>
           <p className="mt-4">{course?.description}</p>
           <div className="font-bold mt-3 flex gap-4">
-            <span>20 alunos</span>
-            <span>10 avaliações</span>
+            <span>{course.students} alunos</span>
+            <span>{course.rating?.count} avaliações</span>
             <span>Criado por {course.owner?.name || course.owner.username}</span>
           </div>
           <div className="mt-3 flex gap-6 items-center">
-            <Rate disabled defaultValue={3} />
-            <span>(5 avaliações)</span>
+            <Rate disabled value={course.rating?.rate} />
+            <span>({course.rating?.count} avaliações)</span>
           </div>
           <div className="mt-auto flex gap-12 items-center">
             <p>
@@ -87,10 +85,18 @@ export default function Course() {
               </span>
               woqs
             </p>
-            {!isOwner && (
+            {!course.isOwner && !course.isStudent && (
               <Button type="primary" onClick={handleShowModal}>
                 Comprar
               </Button>
+            )}
+            {course.isStudent && (
+              <div className="flex gap-3">
+                <Rating courseID={course.id} />
+                <Link to={`/watch/${course.id}`}>
+                  <Button type="primary">Assistir</Button>
+                </Link>
+              </div>
             )}
           </div>
         </div>
@@ -118,5 +124,33 @@ export default function Course() {
         )}
       </div>
     </div>
+  );
+}
+
+function Rating({ courseID }: { courseID: string }) {
+  const [modalIsOpened, setModalIsOpened] = useState(false);
+  const [rate, setRating] = useState(0);
+
+  async function handleEvaluate() {
+    await api.post(`/courses/${courseID}/evaluate`, { rate });
+
+    setModalIsOpened(false);
+  }
+  return (
+    <>
+      <Button type="primary" onClick={() => setModalIsOpened(true)}>
+        Avaliar
+      </Button>
+      <Modal
+        open={modalIsOpened}
+        title="Qual nota você dá para o curso?"
+        okText="Confirmar"
+        cancelText="Cancelar"
+        onOk={handleEvaluate}
+        onCancel={() => setModalIsOpened(false)}
+      >
+        <Rate allowHalf value={rate} onChange={(value) => setRating(value)} />
+      </Modal>
+    </>
   );
 }

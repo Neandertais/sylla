@@ -1,14 +1,18 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+
 import Application from '@ioc:Adonis/Core/Application'
 import Drive from '@ioc:Adonis/Core/Drive'
+import Database from '@ioc:Adonis/Lucid/Database'
+
 import { randomUUID } from 'node:crypto'
 
 import CourseCreateValidator from 'App/Validators/CourseCreateValidator'
 import CourseUpdateValidator from 'App/Validators/CourseUpdateValidator'
 
 import Course from 'App/Models/Course'
-import Database from '@ioc:Adonis/Lucid/Database'
 import CourseStudent from 'App/Models/CourseStudent'
+import CourseRatingValidator from 'App/Validators/CourseRatingValidator'
+import CourseRating from 'App/Models/CourseRating'
 
 export default class CoursesController {
   public async list({ auth: { user }, request }: HttpContextContract) {
@@ -41,7 +45,7 @@ export default class CoursesController {
     return { data: { keywords: keywords.rows.map(({ keywords }) => keywords) } }
   }
 
-  public async find({ params: { id }, response }: HttpContextContract) {
+  public async find({ auth: { user }, params: { id }, response }: HttpContextContract) {
     const course = await Course.query()
       .where('id', id)
       .preload('owner')
@@ -54,17 +58,44 @@ export default class CoursesController {
       return response.notFound({ errors: [{ message: 'course not found' }] })
     }
 
+    const [rating, { students }, student] = await Promise.all([
+      Database.query()
+        .from('course_ratings')
+        .where('course_id', course.id)
+        .count('*', 'count')
+        .avg('rate', 'rate')
+        .first(),
+      Database.query()
+        .from('course_students')
+        .where('course_id', course.id)
+        .count('*', 'students')
+        .first(),
+      CourseStudent.query()
+        .where('user_id', user?.username || ' ')
+        .where('course_id', course.id)
+        .first(),
+    ])
+
+    const isStudent = student ? true : false
+    const isOwner = course.ownerId === user?.username
+
     return {
       data: {
-        course: course.serialize({
-          relations: {
-            owner: { fields: ['username', 'name'] },
-            sections: {
-              fields: ['id', 'name'],
-              relations: { videos: { fields: ['id', 'name', 'thumbnailUrl'] } },
+        course: {
+          ...course.serialize({
+            relations: {
+              owner: { fields: ['username', 'name'] },
+              sections: {
+                fields: ['id', 'name'],
+                relations: { videos: { fields: ['id', 'name', 'thumbnailUrl'] } },
+              },
             },
-          },
-        }),
+          }),
+          rating,
+          students,
+          isStudent,
+          isOwner,
+        },
       },
     }
   }
@@ -173,5 +204,30 @@ export default class CoursesController {
     })
 
     return response.created()
+  }
+
+  public async evaluate({
+    auth: { user },
+    params: { id },
+    bouncer,
+    request,
+    response,
+  }: HttpContextContract) {
+    const course = await Course.find(id)
+
+    if (!course) {
+      return response.notFound({ errors: [{ message: 'course not found' }] })
+    }
+
+    await bouncer.authorize('evaluateCourse', course)
+
+    const { rate } = await request.validate(CourseRatingValidator)
+
+    const rating = await CourseRating.updateOrCreate(
+      { userId: user?.username, courseId: course.id },
+      { rate }
+    )
+
+    return { data: rating }
   }
 }

@@ -44,6 +44,13 @@ declare global {
       name?: string;
     };
     sections: Section[];
+    rating?: {
+      count: number;
+      rate: number;
+    };
+    students?: number;
+    isStudent?: boolean;
+    isOwner?: boolean;
   }
 
   interface Section {

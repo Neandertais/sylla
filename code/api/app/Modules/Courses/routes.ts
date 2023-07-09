@@ -9,6 +9,7 @@ export default function coursesRoutes() {
     Route.route('/:id', ['PATCH', 'PUT'], 'CoursesController.update').middleware('auth')
     Route.delete('/:id', 'CoursesController.delete').middleware('auth')
     Route.post('/:id/buy', 'CoursesController.buy').middleware('auth')
+    Route.post('/:id/evaluate', 'CoursesController.evaluate').middleware('auth')
   })
     .prefix('courses')
     .where('id', /^[a-zA-Z0-9_-]+$/)
