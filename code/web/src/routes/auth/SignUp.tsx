@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Button, Form, Input } from "antd";
+import { useEffect, useState } from "react";
+import { Button, Form, Input, message } from "antd";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { debounce } from "lodash-es";
 
@@ -19,6 +19,28 @@ export default function SignUp() {
   const auth = useAuth();
   const navigate = useNavigate();
   const { search } = useLocation();
+
+  const [form] = Form.useForm();
+  const username = Form.useWatch("username", form);
+  const email = Form.useWatch("email", form);
+
+  useEffect(() => {
+    form
+      .validateFields(["username"])
+      .then(() => {
+        checkAlreadyUsed("username", username, setUsernameErrorStatus);
+      })
+      .catch(() => {});
+  }, [username, form]);
+
+  useEffect(() => {
+    form
+      .validateFields(["email"])
+      .then(() => {
+        checkAlreadyUsed("email", email, setEmailErrorStatus);
+      })
+      .catch(() => {});
+  }, [email, form]);
 
   async function handleSubmit(form: ISignUpForm) {
     try {
@@ -57,7 +79,7 @@ export default function SignUp() {
       <div className="flex items-center justify-center">
         <div className="w-full max-w-md px-6">
           <h1 className="font-sans font-bold text-2xl text-center mb-6">Cadastrar</h1>
-          <Form layout="vertical" onFinish={handleSubmit} requiredMark={false}>
+          <Form form={form} layout="vertical" onFinish={handleSubmit} requiredMark={false}>
             <Form.Item
               label="Nome de usuário"
               name="username"
@@ -78,12 +100,13 @@ export default function SignUp() {
                   min: 8,
                   message: "O nome de usuário deve ter pelo menos 8 caracteres",
                 },
+                {
+                  pattern: /^[a-z0-9_]+$/,
+                  message: "O nome de usuário só pode ter letras, números e underline"
+                }
               ]}
             >
-              <Input
-                onChange={({ target: { value } }) => checkAlreadyUsed("username", value, setUsernameErrorStatus)}
-                className=""
-              />
+              <Input />
             </Form.Item>
             <Form.Item
               label="Email"
@@ -102,7 +125,7 @@ export default function SignUp() {
                 },
               ]}
             >
-              <Input onChange={({ target: { value } }) => checkAlreadyUsed("email", value, setEmailErrorStatus)} />
+              <Input />
             </Form.Item>
             <Form.Item
               label="Senha"
