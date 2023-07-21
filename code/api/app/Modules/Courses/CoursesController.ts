@@ -16,7 +16,7 @@ import CourseRating from 'App/Models/CourseRating'
 
 export default class CoursesController {
   public async list({ auth: { user }, request }: HttpContextContract) {
-    const { owner, keyword } = request.qs()
+    const { owner, keyword, student } = request.qs()
 
     if (keyword) {
       const courses = await Course.query().whereLike('keywords', `%${keyword}%`)
@@ -30,19 +30,39 @@ export default class CoursesController {
       return { data: { courses } }
     }
 
-    const keywords = await Database.rawQuery(
-      "select distinct unnest(string_to_array(keywords, ',')) as keywords FROM courses limit 10;"
-    )
+    // const keywords = await Database.rawQuery(
+    //   "select distinct unnest(string_to_array(keywords, ',')) as keywords FROM courses limit 10;"
+    // )
 
-    if (user) {
+    if (user && student) {
       const courses = await Course.query().whereIn('id', (query) =>
         query.from('course_students').select('course_id').where('user_id', user.username)
       )
 
-      return { data: { courses, keywords: keywords.rows.map(({ keywords }) => keywords) } }
+      return { data: { courses } }
     }
 
-    return { data: { keywords: keywords.rows.map(({ keywords }) => keywords) } }
+    function groupBy(list, keyGetter) {
+      const map = new Map()
+      list.forEach((item) => {
+        const key = keyGetter(item)
+        const collection = map.get(key)
+        if (!collection) {
+          map.set(key, [item])
+        } else {
+          collection.push(item)
+        }
+      })
+      return map
+    }
+
+    const courses = groupBy(await Course.all(), (course) => course.keywords[0])
+
+    return {
+      data: {
+        courses: Array.from(courses, (item) => ({ keyword: item[0], courses: item[1] })),
+      },
+    }
   }
 
   public async find({ auth: { user }, params: { id }, response }: HttpContextContract) {

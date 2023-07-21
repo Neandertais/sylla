@@ -18,12 +18,12 @@ export default function Home() {
     );
   }
 
-  const keywords: string[] = data.keywords;
+  const coursesByKeyword: { keyword: string; courses: Course[] }[] = data.courses;
 
   return (
     <div className="py-10">
-      {keywords.map((keyword) => (
-        <CourseList key={keyword} keyword={keyword} />
+      {coursesByKeyword.map((item) => (
+        <CourseList key={item.keyword} keyword={item.keyword} courses={item.courses} />
       ))}
     </div>
   );

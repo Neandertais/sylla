@@ -6,7 +6,7 @@ import CourseDisplay from "@components/course/CourseDisplay";
 export default function Courses() {
   const { user } = useAuth();
 
-  const bought = useSWR(`/courses`);
+  const bought = useSWR(`/courses?student=true`);
   const produced = useSWR(`/courses?owner=${user?.username}`);
 
   if (bought.isLoading || produced.isLoading) {
