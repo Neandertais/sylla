@@ -65,12 +65,20 @@ export default class CoursesController {
     }
   }
 
-  public async find({ auth: { user }, params: { id }, response }: HttpContextContract) {
+  public async find({ auth: { user }, params: { id }, request, response }: HttpContextContract) {
+    const { studio } = request.qs()
+
     const course = await Course.query()
       .where('id', id)
       .preload('owner')
       .preload('sections', (section) =>
-        section.orderBy('position').preload('videos', (video) => video.orderBy('position'))
+        section
+          .orderBy('position')
+          .preload('videos', (video) =>
+            studio
+              ? video.orderBy('position')
+              : video.orderBy('position').where('status', 'published')
+          )
       )
       .first()
 
@@ -107,7 +115,7 @@ export default class CoursesController {
               owner: { fields: ['username', 'name'] },
               sections: {
                 fields: ['id', 'name'],
-                relations: { videos: { fields: ['id', 'name', 'thumbnailUrl'] } },
+                relations: { videos: { fields: ['id', 'name', 'thumbnailUrl', 'status'] } },
               },
             },
           }),

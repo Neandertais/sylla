@@ -68,5 +68,6 @@ declare global {
     thumbnailUrl: string;
     created_at: string;
     qualities: string[];
+    status?: string;
   }
 }

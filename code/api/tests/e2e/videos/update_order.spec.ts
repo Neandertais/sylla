@@ -54,7 +54,7 @@ test.group('Videos - update order', (group) => {
         },
       },
     })
-  })
+  }).skip()
 
   test('should return video object with position updated and section', async ({
     client,

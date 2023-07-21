@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import useSWR from "swr";
 
 import { Button, Form, Input, Modal, Skeleton } from "antd";
@@ -63,12 +64,20 @@ export default function VideoSettings() {
         </Button>
       </Form>
       <div className="flex-[2] max-w-[260px]">
-        <div className="aspect-video w-full bg-blue-600 rounded-md overflow-hidden">
-          {data?.thumbnailUrl && <img className="w-full h-full object-cover" src={data?.thumbnailUrl} alt="" />}
+        <div className="aspect-video w-full rounded-md overflow-hidden">
+          {data?.thumbnailUrl && (
+            <img
+              className={clsx(["w-full h-full object-cover", data.status !== "published" && "blur-md"])}
+              src={data?.thumbnailUrl}
+              alt=""
+            />
+          )}
         </div>
-        <Link to="" className="block whitespace-nowrap overflow-hidden text-ellipsis">
-          uesada w awdiajdwah asidahwda ahdiwa sadwad wa dsad w
-        </Link>
+        {data?.status === "published" && (
+          <Link to={`/watch/${id}/${video}`} className="block whitespace-nowrap overflow-hidden text-ellipsis">
+            {`${window.location.origin}/watch/${id}/${video}`}
+          </Link>
+        )}
       </div>
     </div>
   );

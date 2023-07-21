@@ -10,6 +10,7 @@ import type useStudio from "@services/studio";
 import VideoUpload from "./VideoUpload";
 import { Link, useParams } from "react-router-dom";
 import { Modal } from "antd";
+import { BiErrorCircle } from "react-icons/bi";
 
 export default function Panel({
   addDraggable,
@@ -134,21 +135,23 @@ function VideoPanel({
   return (
     <div ref={containerRef} data-type="video" data-id={video.id} className="border-t first-of-type:border-t-0 group">
       <div className="flex gap-6 items-center px-6 py-3 group-[.selected]:opacity-0 group-[.dragging]:border group-[.dragging]:rounded-md">
-        <Link to={`/watch/${id}/${video.id}`} className="w-full max-w-[120px]">
+        <Link to={video.status === "published" ? `/watch/${id}/${video.id}` : ""} className="w-full max-w-[120px]">
           <div className="relative w-full aspect-video bg-zinc-200 rounded-md overflow-hidden">
             {video.thumbnailUrl && (
-              <img className="absolute w-full h-full object-cover" src={video.thumbnailUrl} alt="" />
+              <img
+                className={clsx(["absolute w-full h-full object-cover", video.status !== "published" && "blur-sm"])}
+                src={video.thumbnailUrl}
+                alt=""
+              />
             )}
           </div>
         </Link>
-        <div className="w-full flex items-center justify-between">
+        <div className="w-full flex items-center justify-between gap-3">
           <div className="flex-[2]">
             <p className="font-bold">{video.name}</p>
             <p className="max-w-[40ch] whitespace-nowrap overflow-hidden text-ellipsis">{video.description}</p>
           </div>
-          <p className="flex-1 text-center font-bold">
-            20 <br /> visualizações
-          </p>
+          <p className="flex-[0.7] text-center font-bold text-red-600">{video.status !== "published" && <BiErrorCircle size={26} />}</p>
           <p className="flex-1 text-center font-bold">
             {new Date(video.created_at).toLocaleDateString("pt", {
               day: "2-digit",

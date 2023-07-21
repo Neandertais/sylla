@@ -8,7 +8,9 @@ import SectionUpdateOrderValidator from 'App/Validators/SectionUpdateOrderValida
 import SectionUpdateValidator from 'App/Validators/SectionUpdateValidator'
 
 export default class SectionsController {
-  public async list({ params: { course }, response }: HttpContextContract) {
+  public async list({ params: { course }, request, response }: HttpContextContract) {
+    const { studio } = request.qs()
+
     // Check if course exists
     if (!(await Course.find(course))) {
       return response.notFound({ errors: [{ message: 'course not found' }] })
@@ -17,7 +19,9 @@ export default class SectionsController {
     // Query sections with course ordered by position
     const sections = await Section.query()
       .preload('videos', (videos) => {
-        videos.where('status', 'published').orWhere('status', 'processing').orderBy('position')
+        studio
+          ? videos.orderBy('position')
+          : videos.where('status', 'published').orderBy('position')
       })
       .where('courseId', course)
       .orderBy('position')

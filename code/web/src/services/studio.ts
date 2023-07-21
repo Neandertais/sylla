@@ -6,7 +6,7 @@ import { debounce } from "lodash-es";
 import { api } from "@services/api";
 
 export default function useStudio(id: string) {
-  const { data: sections, isLoading, mutate } = useSWR<Section[]>(`/courses/${id}/sections`);
+  const { data: sections, isLoading, mutate } = useSWR<Section[]>(`/courses/${id}/sections?studio=true`);
 
   const handleSectionChange = useCallback(async (current: string, before: string | null) => {
     await api.patch(`sections/${current}/order`, { sectionBefore: before });
