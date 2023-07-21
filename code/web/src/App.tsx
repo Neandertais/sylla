@@ -11,11 +11,13 @@ import AuthRoutes from "@routes/auth/routes";
 import CourseRoutes from "@routes/course/routes";
 import ProfileRoutes from "@routes/profile/routes";
 import Search from "@routes/Search";
+import NotFound from "./404";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
+    errorElement: <NotFound />,
     children: [
       { path: "", element: <Home /> },
       { path: "/search", element: <Search /> },
@@ -24,6 +26,10 @@ const router = createBrowserRouter([
     ],
   },
   ...AuthRoutes,
+  {
+    path: "*",
+    element: <NotFound />,
+  },
 ]);
 
 export default function App() {
