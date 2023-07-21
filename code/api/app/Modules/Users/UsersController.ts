@@ -35,12 +35,14 @@ export default class UsersController {
         .count('*', 'students')
         .join('courses', 'users.username', 'courses.owner_id')
         .join('course_students', 'course_students.course_id', 'courses.id')
+        .where('users.username', user.username)
         .first(),
       Database.query()
         .from('users')
         .count('*', 'evaluations')
         .join('courses', 'users.username', 'courses.owner_id')
         .join('course_ratings', 'course_ratings.course_id', 'courses.id')
+        .where('users.username', user.username)
         .first(),
     ])
     return {
