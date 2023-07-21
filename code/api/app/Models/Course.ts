@@ -86,7 +86,7 @@ export default class Course extends BaseModel {
           .avg('rate', 'rate')
           .first()
 
-        course.rating = { count, rate: +rate }
+        course.rating = { count, rate: Math.round(+rate * 10) / 10 }
       })
     )
   }

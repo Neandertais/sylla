@@ -91,7 +91,10 @@ export default class CoursesController {
               },
             },
           }),
-          rating,
+          rating: {
+            ...rating,
+            rate: Math.round(+rating.rate * 10) / 10,
+          },
           students,
           isStudent,
           isOwner,
