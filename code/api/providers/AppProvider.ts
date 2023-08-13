@@ -12,21 +12,26 @@ export default class AppProvider {
 
   public async boot() {
     // IoC container is ready
-    const Drive = (await import('@ioc:Adonis/Core/Drive')).default
-    const Video = (await import('App/Models/Video')).default
 
-    await initNSFW()
 
-    const notProcessedVideos = await Video.query().where('status', 'processing')
+    // Add the unprocessed videos to the queue
+    try {
+      const Drive = (await import('@ioc:Adonis/Core/Drive')).default
+      const Video = (await import('App/Models/Video')).default
 
-    notProcessedVideos.map(async (video) => {
-      const directory = Drive.use('video').list(`${video.id}`)
-      const uploadedFile = Drive.use('video').makePath(
-        (await directory.toArray()).find((item) => item.location.includes('uploaded'))?.location!
-      )
+      await initNSFW()
 
-      process(uploadedFile, video)
-    })
+      const notProcessedVideos = await Video.query().where('status', 'processing')
+
+      notProcessedVideos.map(async (video) => {
+        const directory = Drive.use('video').list(`${video.id}`)
+        const uploadedFile = Drive.use('video').makePath(
+          (await directory.toArray()).find((item) => item.location.includes('uploaded'))?.location!
+        )
+
+        process(uploadedFile, video)
+      })
+    } catch {}
   }
 
   public async ready() {
